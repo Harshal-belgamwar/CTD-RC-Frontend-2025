@@ -37,7 +37,7 @@ const Navbar = () => {
         </NavLink>
 
         <NavLink
-          to="/leaderboards"
+          to="/leaderboard"
           className={({ isActive }) =>
             `text-md text-center font-bold leading-[100%] ${
               isActive
