@@ -1,23 +1,47 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import axios from "axios";
+import Description from "../components/Description";
+import Sample from "../components/Sample";
+import Submissions from "../components/Submissions";
+import { io } from "socket.io-client";
+
+const BACKEND_URL = "http://localhost:3000";
+
+function encodeBase64(str) {
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(str);
+  let binary = "";
+  bytes.forEach((b) => (binary += String.fromCharCode(b)));
+  return btoa(binary);
+}
 
 const CodeEditor = () => {
-  const languages = ["cpp", "java", "python", "javascript"];
+  const languages = ["cpp", "java", "python"];
   const [language, setLanguage] = useState("python");
+
   const [code, setCode] = useState("");
+
   const [output, setOutput] = useState("");
+  const [submitResult, setSubmitResult] = useState(null);
+  const [customInput, setCustomInput] = useState("");
+  const [activationId, setActivationId] = useState(null);
+  const [machineInput, setMachineInput] = useState("");
+  const [machineOutput, setMachineOutput] = useState(null);
+  const [editorHeight, setEditorHeight] = useState("500px");
 
-  // Judge0 language mapping
-  const languageMap = {
-    cpp: 54,
-    java: 62,
-    python: 71,
-    javascript: 63,
-  };
+  const [isRunning, setIsRunning] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Default code snippets
+  const [activeTab, setActiveTab] = useState("description");
+  const [question, setQuestion] = useState({});
+  const [userSubmissions, setUserSubmissions] = useState([]);
+
+  const leftColRef = useRef(null);
+  const navigate = useNavigate();
+
   const defaultCode = {
     cpp: `#include <iostream>
 using namespace std;
@@ -26,49 +50,222 @@ int main() {
     cout << "Hello, World!" << endl;
     return 0;
 }`,
-    java: `public class Main {
+    java: `import java.util.*;
+    
+public class Main {
     public static void main(String[] args) {
         System.out.println("Hello, World!");
     }
 }`,
     python: `print("Hello, World!")`,
-    javascript: `console.log("Hello, World!");`,
   };
 
-  // Load default code on language change
+  //Load save
+  useEffect(() => {
+    if (!question?.id) return;
+    const saved = localStorage.getItem(`code_q${question.id}_${language}`);
+    if (saved) setCode(saved);
+    else setCode(defaultCode[language]);
+  }, [question, language]);
+
+  // Auto-save code
+  useEffect(() => {
+    if (!question?.id) return;
+    const timer = setTimeout(() => {
+      localStorage.setItem(`code_q${question.id}_${language}`, code);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [code, question, language]);
+
   useEffect(() => {
     setCode(defaultCode[language]);
   }, [language]);
 
+  // Adjust editor height
+  useEffect(() => {
+    const updateHeight = () => {
+      if (leftColRef.current)
+        setEditorHeight(`${leftColRef.current.clientHeight}px`);
+    };
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
+  }, []);
+
+  const location = useLocation();
+  const questionIndex = location.state?.problem_id;
+
+  useEffect(() => {
+    if (!questionIndex) return;
+    const fetchQuestion = async () => {
+      try {
+        const res = await axios.get(
+          `${BACKEND_URL}/problems/${questionIndex}`,
+          { withCredentials: true }
+        );
+        setQuestion(res.data);
+      } catch (err) {
+        console.error("Error fetching question:", err);
+      }
+    };
+    fetchQuestion();
+  }, [questionIndex]);
+
+
+  //io initialization for run and submit code
+  useEffect(() => {
+    if (!activationId) return;
+    const socket = io(BACKEND_URL, {
+      withCredentials: true,
+      transports: ["websocket"],
+    });
+
+    socket.on("connect", () => {
+      
+      socket.emit("subscribe", activationId);
+    });
+
+    socket.on("result", (data) => {
+      if (
+        data.user_output !== undefined &&
+        String(data.submission_id).startsWith("run_")
+      ) {
+    
+        setOutput(data.user_output ?? `${data.status} : ${data.message}`);
+        setActivationId(null);
+      } else if (Number.isInteger(data.submission_id)) {
+       
+        setActivationId(null);
+        const parsedData = {
+          status: data.status || "unknown",
+          message: data.message || "",
+          failed_test_case: parseInt(data.failed_test_case ?? "0", 10),
+          total_test_case: parseInt(data.total_test_case ?? "0", 10),
+          score: parseInt(data.score ?? "0", 10),
+        };
+        
+        setSubmitResult(parsedData);
+
+        if (
+          parsedData.status.toLowerCase() === "accepted" &&
+          !localStorage.getItem(`solved_${questionIndex}`)
+        ) {
+          localStorage.setItem(`solved_${questionIndex}`, "solved");
+        }
+      } else {
+        setMachineOutput(
+          data.user_output
+            ? data.user_output
+            : `${data.status} : ${data.message}`
+        );
+        setActivationId(null);
+      }
+      setIsRunning(false);
+      setIsSubmitting(false);
+    });
+
+    return () => socket.disconnect();
+  }, [activationId, questionIndex]);
+
+  // Run code
   const runCode = async () => {
-    setOutput("⏳ Running...");
+    setIsRunning(true);
+    setOutput(null);
+    setSubmitResult(null);
+
+    const payload = {
+      code: encodeBase64(code),
+      customTestcase: encodeBase64(customInput),
+      language,
+      problem_id: question?.id || 1,
+      event_id: 2,
+    };
 
     try {
-      const response = await axios.post(
-        "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true",
+      const res = await axios.post(`${BACKEND_URL}/submission/run`, payload, {
+        withCredentials: true,
+      });
+      const data = res.data;
+      if (data.submission_id) setActivationId(res.data.submission_id);
+    } catch (err) {
+      if (err.response.status === 403) {
+        navigate("/results");
+      }
+      setOutput("Error: " + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const submitCode = async () => {
+    setIsSubmitting(true);
+    setOutput(null);
+    setSubmitResult(null);
+
+    try {
+      const res = await axios.post(
+        `${BACKEND_URL}/submission/submit`,
         {
-          source_code: code,
-          language_id: languageMap[language],
-          stdin: "",
+          code: encodeBase64(code),
+          language,
+          problem_id: question?.id || 1,
+          event_id: 2,
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-RapidAPI-Key": import.meta.env.REACT_APP_JUDGE0_API_KEY,
-            "X-RapidAPI-Host": import.meta.env.REACT_APP_JUDGE0_API_URL,
-          },
-        }
+        { withCredentials: true }
       );
 
-      const result = response.data;
+      console.log(res.error);
 
-      if (result.stdout) setOutput(result.stdout);
-      else if (result.stderr) setOutput("❌ Runtime Error:\n" + result.stderr);
-      else if (result.compile_output)
-        setOutput("⚠️ Compilation Error:\n" + result.compile_output);
-      else setOutput("⚠️ No output received.");
+      // Save submission_id to trigger useEffect
+      setActivationId(res.data.submission_id);
     } catch (err) {
-      setOutput("🚨 Error: " + err.message);
+      if (err.response.status === 403) {
+        navigate("/results");
+      }
+
+      console.error("Submission error:", err);
+      setSubmitResult({
+        status: "error",
+        message: err,
+      });
+    }
+  };
+
+  const machineRun = async () => {
+    setMachineOutput(null);
+
+    const payload = {
+      customTestcase: encodeBase64(machineInput),
+      problem_id: question?.id || 1,
+      event_id: 2,
+    };
+
+    try {
+     
+      const res = await axios.post(
+        `${BACKEND_URL}/submission/run-system`,
+        payload,
+        {
+          withCredentials: true,
+        }
+      );
+      const data = res.data;
+      if (data.submission_id) setActivationId(res.data.submission_id);
+    } catch (err) {
+      setOutput("Error: " + (err.response?.data?.message || err.message));
+    }
+  };
+
+  //fetch submissions
+  const fetchSubmissions = async () => {
+    try {
+      const res = await axios.get(`${BACKEND_URL}/user/gethistory`, {
+        withCredentials: true,
+      });
+      const filterData = res.data.filter(
+        (submission) => submission.problem_id === questionIndex
+      );
+      setUserSubmissions(filterData);
+    } catch{
+      void(0);
     }
   };
 
@@ -79,99 +276,254 @@ int main() {
         <Navbar />
       </nav>
 
-      {/* Language selector */}
-      <div className="w-full  text-white mt-15 flex justify-end pr-[1.5%]">
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="bg-[#CAFF33] w-[25%] sm:w-[20%] md:w-[15%] lg:w-[12%] 
-                     h-[10%] sm:h-[46px] text-center 
-                     text-black text-sm sm:text-base rounded-3xl shadow-md 
-                      transition-colors duration-300 font-semibold"
-        >
-          {languages.map((lang) => (
-            <option key={lang} value={lang} className="bg-[#CAFF33] text-black">
-              {lang.toUpperCase()}
-            </option>
+      {/* Tabs & Language Selector */}
+      <div className="w-full text-white mt-15 flex justify-end pr-[1.5%]">
+        <div className="w-1/2 text-white mt-10 flex flex-row justify-start gap-4 p-4  rounded-2xl shadow-md bg-[#1A1A1A]">
+          {["description", "sampleCase", "Submissions"].map((tab) => (
+            <div
+              key={tab}
+              className={`cursor-pointer px-3 py-1 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200
+                          ${
+                            activeTab === tab
+                              ? "bg-[#CAFF33] text-black shadow-lg"
+                              : "text-white hover:text-[#CAFF33]"
+                          }`}
+              onClick={() => {
+                setActiveTab(tab);
+                if (tab === "Submissions") fetchSubmissions();
+              }}
+            >
+              {tab}
+            </div>
           ))}
-        </select>
+        </div>
+
+        <div className="w-1/2 flex justify-end items-center gap-3 px-4 mt-10  rounded-2xl shadow-md bg-[#1A1A1A]">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="bg-[#CAFF33] text-black font-semibold rounded-full px-4 py-2 shadow-md hover:scale-105 transition-transform duration-200"
+          >
+            {languages.map((lang) => (
+              <option key={lang} value={lang}>
+                {lang.toUpperCase()}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Question + Code Editor */}
-      <div className="w-full flex flex-col lg:flex-row gap-6 p-4 ">
-        {/* Question & test cases */}
-        <div className="w-full lg:w-1/2 h-full overflow-y-auto p-6  rounded-lg shadow-md">
-          <h2 className=" text-2xl sm:text-3xl md:text-4xl text-white font-bold">
-            5. Question Name
-          </h2>
-          <p className=" mt-3 text-base sm:text-lg md:text-xl text-white">
-            Points: 149
-          </p>
-
-          <p className=" mt-5 text-base sm:text-lg text-white leading-relaxed">
-            Leland Tyler Wayne (born September 16, 1993), known professionally
-            as Metro Boomin, is an American RECORD Producer. Critically
-            acclaimed for his dark production style...
-          </p>
-
-          <div className=" mt-8 text-lg sm:text-xl text-white font-semibold">
-            Test Cases
+      <div
+        className="w-full flex flex-col lg:flex-row gap-6 p-4"
+        ref={leftColRef}
+      >
+        {/* Left Column: Question / Samples / Submissions */}
+        <div className="w-full flex flex-col lg:w-1/2  gap-4 overflow-y-auto rounded-lg shadow-xl bg-gradient-to-b from-[#1C1C1C] to-[#2A2A2A] p-4">
+          {/* Question / Samples / Submissions */}
+          <div className="border-2 border-[#CAFF33] p-4 rounded-lg bg-[#1B1B1B] shadow-inner">
+            {activeTab === "description" && (
+              <Description
+                Question={question || { title: "", description: "", points: 0 }}
+              />
+            )}
+            {activeTab === "sampleCase" && (
+              <Sample samples={question.samples || []} />
+            )}
+            {activeTab === "Submissions" && (
+              <Submissions userSubmissions={userSubmissions} />
+            )}
           </div>
-          <div></div>
+
+          {/* Test Case Section */}
+          <div className="flex flex-col border-2 border-[#CAFF33] rounded-lg p-4 bg-[#222222] shadow-md text-white gap-3">
+            <div className="text-lg font-semibold text-[#CAFF33]">
+              Test Case
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Input Box */}
+              <div className="flex flex-col">
+                <label className="text-sm text-gray-400 mb-1">Input</label>
+                <textarea
+                  className="bg-[#1C1C1C] border border-[#555] rounded-md p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#CAFF33] resize-none"
+                  rows={5}
+                  value={machineInput}
+                  onChange={(e) => setMachineInput(e.target.value)}
+                  placeholder="Enter input here"
+                ></textarea>
+              </div>
+
+              {/* Output Display Box */}
+              <div className="flex flex-col">
+                <label className="text-sm text-gray-400 mb-1">Expected Output</label>
+                <div className="bg-[#1C1C1C] border border-[#555] rounded-md p-3 text-white h-[120px] overflow-auto">
+                  {/* Dynamically display output here */}
+                  {machineOutput}
+                </div>
+              </div>
+            </div>
+
+            <button
+              className="mt-3 bg-[#CAFF33] text-black font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-[#292929] border-2 border-[#CAFF33] hover:text-[#CAFF33] transition-all duration-200"
+              onClick={machineRun}
+            >
+              Machine Run
+            </button>
+          </div>
         </div>
 
-        {/* Code Editor + Output */}
-        <div className="w-full lg:w-1/2 h-[70vh] border border-[#CAFF33] flex flex-col bg-[#6435DD14] rounded-lg shadow-md">
-          {/* Monaco Editor */}
-          <Editor
-            height="50%"
-            theme="vs-dark"
-            language={language}
-            value={code}
-            onChange={(value) => setCode(value || "")}
-            options={{
-              fontSize: 13,
-              fontFamily: "Fira Code, monospace",
-              minimap: { enabled: false },
-              tabSize: 0,
-              insertSpaces: false,
-              detectIndentation: false,
-              quickSuggestions: false,
-            }}
-            onMount={(editor, monaco) => {
-              editor.addCommand(monaco.KeyCode.Tab, () => {});
-            }}
-          />
+        {/* Right Column: Code Editor + Custom Test Case / Submission Results */}
+        <div
+          className="w-full lg:w-1/2 flex flex-col  rounded-lg shadow-md bg-[#1C1C1C] p-3  "
+          style={{ height: editorHeight }}
+        >
+          {/* Editor */}
+          <div className="flex-1 border border-[#CAFF33]">
+            <Editor
+              height="100%"
+              language={language}
+              value={code}
+              onChange={(value) => setCode(value || "")}
+              options={{
+                fontSize: 15,
+                fontFamily: "Fira Code, monospace",
+                minimap: { enabled: false },
+                tabSize: 2,
+                insertSpaces: true,
+                detectIndentation: false,
+                quickSuggestions: false,
+                contextmenu: false,
+              }}
+              onMount={(editor, monaco) => {
+                monaco.editor.defineTheme("dark-custom", {
+                  base: "vs-dark",
+                  inherit: true,
+                  rules: [
+                    { token: "", foreground: "E0E0E0" },
+                    { token: "keyword", foreground: "FF79C6" },
+                    { token: "string", foreground: "50FA7B" },
+                    { token: "number", foreground: "BD93F9" },
+                    {
+                      token: "comment",
+                      foreground: "6272A4",
+                      fontStyle: "italic",
+                    },
+                    { token: "type", foreground: "8BE9FD" },
+                    { token: "function", foreground: "F1FA8C" },
+                  ],
+                  colors: {
+                    "editor.background": "#1C1C1C",
+                    "editor.foreground": "#E0E0E0",
+                    "editorCursor.foreground": "#FF4136",
+                    "editor.lineHighlightBackground": "#2A2A2A",
+                    "editorLineNumber.foreground": "#7FDBFF",
+                    "editor.selectionBackground": "#44475A",
+                    "editorIndentGuide.background": "#44475A",
+                    "editorIndentGuide.activeBackground": "#6272A4",
+                  },
+                });
+                monaco.editor.setTheme("dark-custom");
 
-          {/* Output */}
-          <div className="text-white  text-sm sm:text-base md:text-lg p-4 h-[50%] overflow-y-auto bg-[#0C091F]/60 rounded-b-lg">
-            <strong className="text-[#D1C4FF]">Output:</strong>
-            <pre className="mt-2">{output}</pre>
+                // Tab inserts spaces
+                editor.addCommand(monaco.KeyCode.Tab, () => {
+                  editor.trigger("keyboard", "type", { text: "  " });
+                });
+              }}
+            />
+          </div>
+
+          {/* Custom Test Case / Submission Results */}
+          <div className="flex flex-col gap-4  mt-3">
+            {submitResult ? (
+              <div className="p-4 border border-[#CAFF33] rounded-md bg-[#1C1C1C]/30 text-white">
+                <p className="font-bold mb-2">
+                  Status:{" "}
+                  <span
+                    className={
+                      submitResult.status?.toLowerCase() === "accepted"
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }
+                  >
+                    {submitResult.status}
+                  </span>{" "}
+                  | Score: {submitResult.score ?? 0}
+                </p>
+                <p className="mb-3">
+                  {submitResult.failed_test_case === 0
+                    ? `All ${submitResult.total_test_case} test cases passed`
+                    : `${submitResult.failed_test_case - 1} / ${
+                        submitResult.total_test_case
+                      } test cases passed`}
+                </p>
+                <div className="space-y-2">
+                  {Array.from({ length: submitResult.total_test_case }).map(
+                    (_, idx) => {
+                      let statusClass = "text-white";
+                      let text = `Test Case ${idx + 1}`;
+
+                      if (
+                        submitResult.failed_test_case === 0 ||
+                        idx + 1 < submitResult.failed_test_case
+                      ) {
+                        statusClass = "text-green-400";
+                        text += ": PASSED";
+                      } else if (idx + 1 === submitResult.failed_test_case) {
+                        statusClass = "text-red-500";
+                        text += ": FAILED";
+                      }
+
+                      return (
+                        <div
+                          key={idx + 1}
+                          className="p-2 border border-[#CAFF33] rounded-md"
+                        >
+                          <p className={statusClass}>{text}</p>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-row gap-2">
+                <textarea
+                  value={customInput}
+                  onChange={(e) => setCustomInput(e.target.value)}
+                  placeholder="Enter custom input..."
+                  className="w-full h-[120px] p-3 bg-[#1C1C1C]/40 text-white rounded-lg resize-none focus:outline-none border border-[#CAFF33]"
+                />
+
+                <div className="w-full h-[120px] text-white orbitron text-sm sm:text-base md:text-lg p-4 overflow-y-auto bg-[#1C1C1C]/40 rounded-lg border border-[#CAFF33]">
+                  <div>Output:</div>
+                  <pre>{output ?? ""}</pre>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="mt-10 flex gap-3 justify-end text-black font-bold text-xl">
+            <button
+              onClick={runCode}
+              disabled={isRunning}
+              className="w-[150px] h-[50px] bg-[#CAFF33] disabled:bg-[#7D9900] disabled:cursor-not-allowed border-2 border-[#CAFF33] rounded-md hover:bg-[#292929] hover:text-[#CAFF33] transition-colors shadow-md"
+            >
+              Run
+            </button>
+            <button
+              onClick={submitCode}
+              disabled={isSubmitting}
+              className="w-[150px] h-[50px] border-2 rounded-md shadow-md flex items-center justify-center text-black font-bold transition-colors
+      bg-[#CAFF33] border-[#CAFF33] hover:bg-[#292929] hover:text-[#CAFF33]
+      disabled:bg-[#7D9900] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              Submit
+            </button>
           </div>
         </div>
       </div>
 
       {/* Run & Submit buttons */}
-      <div className="my-8 lg:pr-3 flex gap-5 sm:gap-8 w-full text-black  text-base font-bold sm:text-lg md:text-xl justify-center lg:justify-end">
-        <button
-          onClick={runCode}
-          className="w-[100px] sm:w-[130px] md:w-[150px] h-[40px] sm:h-[45px] md:h-[50px] 
-             bg-[#CAFF33] rounded-3xl 
-             transition-colors duration-300 shadow-md
-             hover:bg-[#292929] hover:text-[#CAFF33] cursor-pointer"
-        >
-          Run
-        </button>
-
-        <button
-          className="w-[100px] sm:w-[130px] md:w-[150px] h-[40px] sm:h-[45px] md:h-[50px] 
-             bg-[#CAFF33] rounded-3xl
-             transition-colors duration-300 shadow-md
-             hover:bg-[#292929] hover:text-[#CAFF33] cursor-pointer"
-        >
-          Submit
-        </button>
-      </div>
     </div>
   );
 };

@@ -5,21 +5,31 @@ import alien from "../assets/alien.png";
 
 function Results() {
   const [result, setResult] = useState({
-    name: "",
+    event_id: 2,
+    team_id: 0,
+    username1: "",
+    username2: null,
+    isjunior: false,
     level: "",
     rank: 0,
-    score: 0,
+    total_score: 0,
     totalSubmissions: 0,
     accuracy: 0,
   });
 
-  useEffect(() => {
-    // Replace with your backend API URL
-    axios
-      .get("http://localhost:5000/api/result")
-      .then((res) => setResult(res.data))
-      .catch((err) => console.error("Error fetching result:", err));
+ useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/result/", { withCredentials: true });
+        setResult(res.data);
+      } catch (err) {
+        console.error("Error fetching result:", err);
+      }
+    };
+
+    fetchData();
   }, []);
+
 
   return (
     <div className="h-[100vh] w-[100vw] bg-[#191919] box-border overflow-x-hidden">
@@ -29,7 +39,7 @@ function Results() {
       </nav>
 
       {/* RESULT Heading */}
-      <div className="mt-[2.5%] w-full h-[63px] text-center font-bold text-6xl leading-[100%] text-[#FFFFFF] mx-auto tracking-wide">
+      <div className="mt-[2.5%] w-full h-[63px] text-center text-transparent bg-clip-text bg-gradient-to-r from-[#CAFF33] via-[#8BC34A] to-[#CAFF33] font-bold text-6xl leading-[100%] text-[#FFFFFF] mx-auto tracking-wide">
         RESULT
       </div>
 
@@ -38,11 +48,11 @@ function Results() {
         <div className="h-full w-[50%] flex flex-col justify-center items-center gap-10">
           <img src={alien} alt="Alien" className="w-[23%] h-[23%]" />
           <div className="w-[363px] h-[53px] font-bold text-[45px] text-center text-[#FFFFFF] leading-[100%]">
-            {result.name || "Loading Name..."}
+             {`${result.username1} ${result.username2 ? `& ${result.username2}` : ""}`}
           </div>
           <div className="w-[229px] h-[64px] rounded-[30px] bg-[#CAFF33] flex justify-center items-center">
             <div className="w-fit h-fit font-bold text-[30px] leading-[100%] text-[#191919] text-center">
-              {result.level || "Unknown"}
+              {result.isjunior ? "JUNIOR" : "SENIOR"}
             </div>
           </div>
         </div>
@@ -53,7 +63,7 @@ function Results() {
           <div className="w-[300px] h-[219px] rounded-[20px] border-[2px] border-[#CAFF33] flex flex-col">
             <div className="w-full h-[60%] bg-[#CAFF33] rounded-t-[15px] flex items-center justify-center">
               <div className="font-bold text-7xl leading-[100%] text-center text-[#191919]">
-                {result.rank}
+                {result.rank||"-"}
               </div>
             </div>
             <div className="w-full h-[40%] flex items-center justify-center">
@@ -67,7 +77,7 @@ function Results() {
           <div className="w-[300px] h-[219px] rounded-[20px] border-[2px] border-[#CAFF33] flex flex-col">
             <div className="w-full h-[60%] bg-[#CAFF33] rounded-t-[15px] flex items-center justify-center">
               <div className="font-bold text-7xl leading-[100%] text-center text-[#191919]">
-                {result.score}
+                {result.total_score||"-"}
               </div>
             </div>
             <div className="w-full h-[40%] flex items-center justify-center">
@@ -81,7 +91,7 @@ function Results() {
           <div className="w-[300px] h-[219px] rounded-[20px] border-[2px] border-[#CAFF33] flex flex-col">
             <div className="w-full h-[60%] bg-[#CAFF33] rounded-t-[15px] flex items-center justify-center">
               <div className="font-bold text-7xl leading-[100%] text-center text-[#191919]">
-                {result.totalSubmissions}
+                {result.total_submissions||"-"}
               </div>
             </div>
             <div className="w-full h-[40%] flex items-center justify-center">
@@ -97,7 +107,7 @@ function Results() {
           <div className="w-[300px] h-[219px] rounded-[20px] border-[2px] border-[#CAFF33] flex flex-col">
             <div className="w-full h-[60%] bg-[#CAFF33] rounded-t-[15px] flex items-center justify-center">
               <div className="font-bold text-6xl leading-[100%] text-center text-[#191919]">
-                {result.accuracy || "100"}%
+                {result.accuracy || "-"}
               </div>
             </div>
             <div className="w-full h-[40%] flex items-center justify-center">

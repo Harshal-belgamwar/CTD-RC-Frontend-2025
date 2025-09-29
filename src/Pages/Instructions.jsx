@@ -33,8 +33,8 @@ const Instructions = () => {
   return (
     <div className="flex flex-col min-h-screen bg-[#191919] tracking-wide">
       <Navbar />
-      <div className="flex flex-col mt-[3%] items-center justify-center space-y-5">
-        <h1 className="text-white text-5xl font-bold py-4">INSTRUCTIONS</h1>
+      <div className="flex flex-col mt-[5%] items-center justify-center space-y-5">
+        <h1 className=" text-5xl font-bold py-4 text-transparent bg-clip-text bg-gradient-to-r from-[#CAFF33] via-[#8BC34A] to-[#CAFF33]">INSTRUCTIONS</h1>
         <div className="w-full max-w-4xl space-y-4">
           {instructionsData.map((item) => (
             <InstructionItem
@@ -45,7 +45,7 @@ const Instructions = () => {
           ))}
         </div>
 
-        <Link to="/question-hub">
+        <Link to="/questionhub">
           <button className="text-[#191919] font-extrabold bg-[#CAFF33] border-[2px] border-[#4a5f12] mt-6 py-3 px-15 rounded-[50px] hover:text-[#CAFF33] hover:bg-[#191919] transition-colors cursor-pointer duration-300 text-xl">
             PROCEED
           </button>
