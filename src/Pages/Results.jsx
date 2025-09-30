@@ -3,6 +3,8 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import alien from "../assets/alien.png";
 
+const backend_url = import.meta.env.VITE_API_URL;
+
 function Results() {
   const [result, setResult] = useState({
     event_id: 2,
@@ -20,7 +22,7 @@ function Results() {
  useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/result/", { withCredentials: true });
+        const res = await axios.get(`${backend_url}/result/`, { withCredentials: true });
         setResult(res.data);
       } catch (err) {
         console.error("Error fetching result:", err);

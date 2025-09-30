@@ -37,7 +37,7 @@ const FullscreenMonitor = () => {
     );
     toast.error("You are logged out due to multiple fullscreen exits.", {
       position: "top-center",
-      autoClose: 3000,
+      autoClose: 2000,
     });
     navigate("/"); // Redirect to login
   };
@@ -50,7 +50,7 @@ const FullscreenMonitor = () => {
         const newCount = exitCount + 1;
         setExitCount(newCount);
 
-        toast.warn(`⚠ Fullscreen exit detected! Exit count: ${newCount}`);
+        toast.warn(`⚠ Fullscreen exit detected! Exit count: ${newCount}`,{autoClose: 1000});
 
         if (newCount >= 3) {
           

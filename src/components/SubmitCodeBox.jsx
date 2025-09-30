@@ -6,7 +6,8 @@ const SubmitCodeBox = ({ code, onClose, Language }) => {
   try {
     decodedCode = atob(code);
   } catch (err) {
-    console.error("Failed to decode code:", err);
+    console.log(err);
+    // void(0);
   }
 
   return (

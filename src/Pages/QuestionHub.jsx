@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
+const backend_url = import.meta.env.VITE_API_URL;
+
 const QuestionHub = () => {
   const [accuracy, setAccuracy] = useState([]);
   const navigate = useNavigate();
@@ -11,7 +13,7 @@ const QuestionHub = () => {
   useEffect(() => {
     const getQuestions = async () => {
       const response = await axios.get(
-        "http://localhost:3000/problems/accuracy",
+        `${backend_url}/problems/accuracy`,
         { withCredentials: true }
       );
       setAccuracy(response.data);

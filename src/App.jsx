@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Login from "./Pages/Login";
 import Instructions from "./Pages/Instructions";
@@ -10,7 +10,17 @@ import { toast, ToastContainer } from "react-toastify";
 import FullscreenMonitor from "./Pages/FullScreenMonitor";
 
 function App() {
+
+   const location = useLocation();
+
+  // Pages where FullscreenMonitor should NOT appear
+  const excludedPages = ["/", "/instructions"];
+  const showFullscreenMonitor = !excludedPages.includes(location.pathname);
+  const switchTab = !excludedPages.includes(location.pathname);
+
+  
   useEffect(() => {
+    
     //  Disable right-click and text selection
     const disable = (e) => e.preventDefault();
     document.addEventListener("contextmenu", disable);
@@ -23,20 +33,21 @@ function App() {
 
     //  Disable keyboard shortcuts (Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+U, F12)
     const blockKeys = (e) => {
+      if (e.ctrlKey && e.shiftKey && ["I", "J"].includes(e.key)) e.preventDefault();
       if (
         (e.ctrlKey && ["c", "v", "x", "u"].includes(e.key.toLowerCase())) ||
         e.key === "F12"
       ) {
         e.preventDefault();
-        toast.warn("⚠ Actions like Copy/Paste are disabled!");
+        toast.warn("⚠ Actions like Copy/Paste are disabled!",{autoClose: 1000});
       }
     };
     document.addEventListener("keydown", blockKeys);
 
     // Detect tab switching
     const handleVisibility = () => {
-      if (document.hidden) {
-        toast.error("⚠ Tab switching is not allowed!");
+      if (document.hidden && switchTab) {
+        toast.error("⚠ Tab switching is not allowed!",{autoClose: 1000});
         // Optional: you could add logic here to end the test or log the event
       }
     };
@@ -68,7 +79,7 @@ function App() {
         
       />
 
-      <FullscreenMonitor/>
+      {showFullscreenMonitor && <FullscreenMonitor/>}
 
       <Routes>
         <Route path="/" element={<Login />} />

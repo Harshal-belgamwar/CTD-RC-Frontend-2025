@@ -8,7 +8,7 @@ import Sample from "../components/Sample";
 import Submissions from "../components/Submissions";
 import { io } from "socket.io-client";
 
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = import.meta.env.VITE_API_URL;
 
 function encodeBase64(str) {
   const encoder = new TextEncoder();
@@ -40,7 +40,11 @@ const CodeEditor = () => {
   const [userSubmissions, setUserSubmissions] = useState([]);
 
   const leftColRef = useRef(null);
+  const socketRef = useRef(null);
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const questionIndex = location.state?.problem_id;
 
   const defaultCode = {
     cpp: `#include <iostream>
@@ -92,8 +96,7 @@ public class Main {
     return () => window.removeEventListener("resize", updateHeight);
   }, []);
 
-  const location = useLocation();
-  const questionIndex = location.state?.problem_id;
+  //fetch question
 
   useEffect(() => {
     if (!questionIndex) return;
@@ -111,61 +114,83 @@ public class Main {
     fetchQuestion();
   }, [questionIndex]);
 
-
   //io initialization for run and submit code
   useEffect(() => {
-    if (!activationId) return;
-    const socket = io(BACKEND_URL, {
-      withCredentials: true,
-      transports: ["websocket"],
-    });
+    // Only create socket if not already created
+    if (!socketRef.current) {
+      socketRef.current = io(BACKEND_URL, {
+        withCredentials: true,
+        transports: ["websocket"],
+      });
 
-    socket.on("connect", () => {
-      
-      socket.emit("subscribe", activationId);
-    });
+      socketRef.current.on("connect", () => {
+        console.log("Socket connected:", socketRef.current.id);
+      });
+    }
 
-    socket.on("result", (data) => {
-      if (
-        data.user_output !== undefined &&
-        String(data.submission_id).startsWith("run_")
-      ) {
-    
-        setOutput(data.user_output ?? `${data.status} : ${data.message}`);
-        setActivationId(null);
-      } else if (Number.isInteger(data.submission_id)) {
-       
-        setActivationId(null);
-        const parsedData = {
-          status: data.status || "unknown",
-          message: data.message || "",
-          failed_test_case: parseInt(data.failed_test_case ?? "0", 10),
-          total_test_case: parseInt(data.total_test_case ?? "0", 10),
-          score: parseInt(data.score ?? "0", 10),
-        };
-        
-        setSubmitResult(parsedData);
-
-        if (
-          parsedData.status.toLowerCase() === "accepted" &&
-          !localStorage.getItem(`solved_${questionIndex}`)
-        ) {
-          localStorage.setItem(`solved_${questionIndex}`, "solved");
-        }
-      } else {
-        setMachineOutput(
-          data.user_output
-            ? data.user_output
-            : `${data.status} : ${data.message}`
-        );
-        setActivationId(null);
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
       }
-      setIsRunning(false);
-      setIsSubmitting(false);
-    });
+    };
+  }, []);
 
-    return () => socket.disconnect();
-  }, [activationId, questionIndex]);
+  // useEffect(() => {
+  //   if (!activationId) return;
+
+  //   if (!socketRef) {
+  //     socketRef.current.socket = io(BACKEND_URL, {
+  //       withCredentials: true,
+  //       transports: ["websocket"],
+  //     });
+  //   }
+
+  //   socketRef.current.off("result");
+
+  //   socketRef.current.on("result", (data) => {
+  //     if (
+  //       data.user_output !== undefined &&
+  //       String(data.submission_id).startsWith("run_")
+  //     ) {
+  //       setOutput(data.user_output ?? `${data.status} : ${data.message}`);
+  //     } else if (Number.isInteger(data.submission_id)) {
+  //       const parsedData = {
+  //         status: data.status || "unknown",
+  //         message: data.message || "",
+  //         failed_test_case: parseInt(data.failed_test_case ?? "0", 10),
+  //         total_test_case: parseInt(data.total_test_case ?? "0", 10),
+  //         score: parseInt(data.score ?? "0", 10),
+  //       };
+
+  //       setSubmitResult(parsedData);
+
+  //       if (
+  //         parsedData.status.toLowerCase() === "accepted" &&
+  //         !localStorage.getItem(`solved_${questionIndex}`)
+  //       ) {
+  //         localStorage.setItem(`solved_${questionIndex}`, "solved");
+  //       }
+  //     } else {
+  //       setMachineOutput(
+  //         data.user_output
+  //           ? data.user_output
+  //           : `${data.status} : ${data.message}`
+  //       );
+  //     }
+  //     setActivationId(null);
+  //     setIsRunning(false);
+  //     setIsSubmitting(false);
+  //   });
+
+  //   return () => socketRef.disconnect();
+  // }, [questionIndex]);
+
+  // useEffect(() => {
+  //   if (activationId && socketRef.current) {
+  //     socketRef.current.emit("subscribe", activationId);
+  //   }
+  // }, [activationId]);
 
   // Run code
   const runCode = async () => {
@@ -185,8 +210,23 @@ public class Main {
       const res = await axios.post(`${BACKEND_URL}/submission/run`, payload, {
         withCredentials: true,
       });
-      const data = res.data;
-      if (data.submission_id) setActivationId(res.data.submission_id);
+
+      setActivationId(res.data.submission_id);
+
+      const handleResult = (data) => {
+        console.log(data);
+        if (data.user_output) {
+          setOutput(data.user_output);
+        } else {
+          setOutput(`${data.status} : ${data.message}`);
+        }
+        // Remove listener after receiving result
+        socketRef.current.off("result", handleResult);
+      };
+
+      // Subscribe to this submission
+      socketRef.current.emit("subscribe", activationId);
+      socketRef.current.on("result", handleResult);
     } catch (err) {
       if (err.response.status === 403) {
         navigate("/results");
@@ -216,6 +256,34 @@ public class Main {
 
       // Save submission_id to trigger useEffect
       setActivationId(res.data.submission_id);
+
+      const handleResult = (data) => {
+        console.log(data);
+        const parsedData = {
+          status: data.status || "unknown",
+          message: data.message || "",
+          failed_test_case: parseInt(data.failed_test_case ?? "0", 10),
+          total_test_case: parseInt(data.total_test_case ?? "0", 10),
+          score: parseInt(data.score ?? "0", 10),
+        };
+
+        setSubmitResult(parsedData);
+
+        if (
+          parsedData.status === "accepted" &&
+          !localStorage.getItem(`solved_${questionIndex}`)
+        ) {
+          localStorage.setItem(`solved_${questionIndex}`, "solved");
+        }
+
+        // Remove listener after handling result
+        socketRef.current.off("result", handleResult);
+      };
+
+      // Subscribe to this submission
+      socketRef.current.emit("subscribe", activationId);
+      socketRef.current.on("result", handleResult);
+
     } catch (err) {
       if (err.response.status === 403) {
         navigate("/results");
@@ -239,7 +307,6 @@ public class Main {
     };
 
     try {
-     
       const res = await axios.post(
         `${BACKEND_URL}/submission/run-system`,
         payload,
@@ -247,8 +314,28 @@ public class Main {
           withCredentials: true,
         }
       );
-      const data = res.data;
-      if (data.submission_id) setActivationId(res.data.submission_id);
+      
+      setActivationId(res.data.submission_id);
+
+      const handleResult = (data) => {
+        console.log(data);
+
+        setMachineOutput(
+          data.user_output
+            ? data.user_output
+            : `${data.status} : ${data.message}`
+        );
+
+       
+
+        // Remove listener after handling result
+        socketRef.current.off("result", handleResult);
+      };
+
+      // Subscribe to this submission
+      socketRef.current.emit("subscribe", activationId);
+      socketRef.current.on("result", handleResult);
+      
     } catch (err) {
       setOutput("Error: " + (err.response?.data?.message || err.message));
     }
@@ -264,8 +351,8 @@ public class Main {
         (submission) => submission.problem_id === questionIndex
       );
       setUserSubmissions(filterData);
-    } catch{
-      void(0);
+    } catch {
+      void 0;
     }
   };
 
@@ -356,7 +443,9 @@ public class Main {
 
               {/* Output Display Box */}
               <div className="flex flex-col">
-                <label className="text-sm text-gray-400 mb-1">Expected Output</label>
+                <label className="text-sm text-gray-400 mb-1">
+                  Expected Output
+                </label>
                 <div className="bg-[#1C1C1C] border border-[#555] rounded-md p-3 text-white h-[120px] overflow-auto">
                   {/* Dynamically display output here */}
                   {machineOutput}
@@ -452,7 +541,9 @@ public class Main {
                 </p>
                 <p className="mb-3">
                   {submitResult.failed_test_case === 0
-                    ? `All ${submitResult.total_test_case} test cases passed`
+                    ? ` ${submitResult.total_test_case}/${
+                        submitResult.total_test_case
+                      } test cases passed`
                     : `${submitResult.failed_test_case - 1} / ${
                         submitResult.total_test_case
                       } test cases passed`}
@@ -502,6 +593,7 @@ public class Main {
               </div>
             )}
           </div>
+          {/* Run & Submit buttons */}
           <div className="mt-10 flex gap-3 justify-end text-black font-bold text-xl">
             <button
               onClick={runCode}
@@ -523,7 +615,7 @@ public class Main {
         </div>
       </div>
 
-      {/* Run & Submit buttons */}
+      
     </div>
   );
 };

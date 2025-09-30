@@ -1,13 +1,9 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import SubmitCodeBox from "./SubmitCodeBox";
 
 const Submissions = ({ userSubmissions }) => {
   const [selectedCode, setSelectedCode] = useState(null);
-   const [selectedlanguage, setSelectedlanguage] = useState(null);
-
-  
-    
-   
+  const [selectedlanguage, setSelectedlanguage] = useState(null);
 
   return (
     <div className="space-y-4 ">

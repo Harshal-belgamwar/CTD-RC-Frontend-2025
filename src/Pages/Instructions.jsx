@@ -4,15 +4,24 @@ import { Link } from "react-router-dom";
 const instructionsData = [
   {
     number: "01",
-    text: "Participants are allowed only one login session. Multiple logins are not permitted.",
+    text: "There will be 4 problems in total.",
   },
   {
     number: "02",
-    text: "The contest will run from 6 PM to 7:30 PM, lasting for a duration of 1.5 hours.",
+    text: "Each problem will carry equal score.",
   },
   {
     number: "03",
-    text: "All questions are available in the Question Hub. Additionally, the correct submission percentage of all the participants for each question is displayed.",
+    text: "There will be no penalty for wrong submissions.",
+  },
+  {
+    number: "04",
+    text: "Use of AI tools, external help, or any form of cheating is strictly prohibited. All codes will be checked for plagiarism – violators will be disqualified.",
+  },
+ 
+  {
+    number: "05",
+    text: "Exiting the full screen 3 times will log out the user automatically.",
   },
 ];
 

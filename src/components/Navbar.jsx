@@ -1,7 +1,7 @@
 import { NavLink ,useNavigate} from "react-router-dom";
 import axios from "axios";
 
-
+const backend_url = import.meta.env.VITE_API_URL;
 
 const Navbar = () => {
 
@@ -15,7 +15,7 @@ const Navbar = () => {
       }
     }
     await axios.post(
-      "http://localhost:3000/user/logout",
+      `${backend_url}/user/logout`,
       {},
       {
         withCredentials: true,

@@ -4,9 +4,11 @@ import axios from "axios";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 
+const backend_url=import.meta.env.VITE_API_URL;
+
 const fetchStudents = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/leaderboard/", {
+    const response = await axios.get(`${backend_url}/leaderboard/`, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +53,7 @@ function Leaderboard() {
   const sortedData = [...dataWithScores].sort((a, b) => b.total - a.total);
 
   // pagination
-  const itemsPerPage = 4;
+  const itemsPerPage = 5;
   const totalPages = Math.max(1, Math.ceil(sortedData.length / itemsPerPage)); // at least 1
   const startIndex = page * itemsPerPage;
   const currentData = sortedData.slice(startIndex, startIndex + itemsPerPage);
