@@ -7,6 +7,7 @@ import Description from "../components/Description";
 import Sample from "../components/Sample";
 import Submissions from "../components/Submissions";
 import { io } from "socket.io-client";
+import Timer from "../components/Timer";
 
 const BACKEND_URL = import.meta.env.VITE_API_URL;
 
@@ -27,17 +28,21 @@ const CodeEditor = () => {
   const [output, setOutput] = useState("");
   const [submitResult, setSubmitResult] = useState(null);
   const [customInput, setCustomInput] = useState("");
-  const [activationId, setActivationId] = useState(null);
+  
   const [machineInput, setMachineInput] = useState("");
   const [machineOutput, setMachineOutput] = useState(null);
+
   const [editorHeight, setEditorHeight] = useState("500px");
 
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+   const [isMachineRun, setIsMachineRun] = useState(false);
 
   const [activeTab, setActiveTab] = useState("description");
   const [question, setQuestion] = useState({});
   const [userSubmissions, setUserSubmissions] = useState([]);
+
+  const [lastInput,setLastInput] = useState("");
 
   const leftColRef = useRef(null);
   const socketRef = useRef(null);
@@ -70,7 +75,7 @@ public class Main {
     const saved = localStorage.getItem(`code_q${question.id}_${language}`);
     if (saved) setCode(saved);
     else setCode(defaultCode[language]);
-  }, [question, language]);
+  }, [question?.id, language]);
 
   // Auto-save code
   useEffect(() => {
@@ -79,7 +84,8 @@ public class Main {
       localStorage.setItem(`code_q${question.id}_${language}`, code);
     }, 1000);
     return () => clearTimeout(timer);
-  }, [code, question, language]);
+  }, [code, question?.id, language]);
+
 
   useEffect(() => {
     setCode(defaultCode[language]);
@@ -136,67 +142,14 @@ public class Main {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (!activationId) return;
-
-  //   if (!socketRef) {
-  //     socketRef.current.socket = io(BACKEND_URL, {
-  //       withCredentials: true,
-  //       transports: ["websocket"],
-  //     });
-  //   }
-
-  //   socketRef.current.off("result");
-
-  //   socketRef.current.on("result", (data) => {
-  //     if (
-  //       data.user_output !== undefined &&
-  //       String(data.submission_id).startsWith("run_")
-  //     ) {
-  //       setOutput(data.user_output ?? `${data.status} : ${data.message}`);
-  //     } else if (Number.isInteger(data.submission_id)) {
-  //       const parsedData = {
-  //         status: data.status || "unknown",
-  //         message: data.message || "",
-  //         failed_test_case: parseInt(data.failed_test_case ?? "0", 10),
-  //         total_test_case: parseInt(data.total_test_case ?? "0", 10),
-  //         score: parseInt(data.score ?? "0", 10),
-  //       };
-
-  //       setSubmitResult(parsedData);
-
-  //       if (
-  //         parsedData.status.toLowerCase() === "accepted" &&
-  //         !localStorage.getItem(`solved_${questionIndex}`)
-  //       ) {
-  //         localStorage.setItem(`solved_${questionIndex}`, "solved");
-  //       }
-  //     } else {
-  //       setMachineOutput(
-  //         data.user_output
-  //           ? data.user_output
-  //           : `${data.status} : ${data.message}`
-  //       );
-  //     }
-  //     setActivationId(null);
-  //     setIsRunning(false);
-  //     setIsSubmitting(false);
-  //   });
-
-  //   return () => socketRef.disconnect();
-  // }, [questionIndex]);
-
-  // useEffect(() => {
-  //   if (activationId && socketRef.current) {
-  //     socketRef.current.emit("subscribe", activationId);
-  //   }
-  // }, [activationId]);
+  
 
   // Run code
   const runCode = async () => {
     setIsRunning(true);
     setOutput(null);
     setSubmitResult(null);
+    
 
     const payload = {
       code: encodeBase64(code),
@@ -211,7 +164,9 @@ public class Main {
         withCredentials: true,
       });
 
-      setActivationId(res.data.submission_id);
+      console.log(res.data.submission_id);
+
+      // setActivationId(res.data.submission_id);
 
       const handleResult = (data) => {
         console.log(data);
@@ -221,11 +176,14 @@ public class Main {
           setOutput(`${data.status} : ${data.message}`);
         }
         // Remove listener after receiving result
+      
+        setIsRunning(false);
         socketRef.current.off("result", handleResult);
       };
 
       // Subscribe to this submission
-      socketRef.current.emit("subscribe", activationId);
+
+      socketRef.current.emit("subscribe", res.data.submission_id);
       socketRef.current.on("result", handleResult);
     } catch (err) {
       if (err.response.status === 403) {
@@ -239,6 +197,9 @@ public class Main {
     setIsSubmitting(true);
     setOutput(null);
     setSubmitResult(null);
+
+    
+ 
 
     try {
       const res = await axios.post(
@@ -255,7 +216,7 @@ public class Main {
       console.log(res.error);
 
       // Save submission_id to trigger useEffect
-      setActivationId(res.data.submission_id);
+      
 
       const handleResult = (data) => {
         console.log(data);
@@ -275,13 +236,14 @@ public class Main {
         ) {
           localStorage.setItem(`solved_${questionIndex}`, "solved");
         }
+        setIsSubmitting(false)
 
         // Remove listener after handling result
         socketRef.current.off("result", handleResult);
       };
 
       // Subscribe to this submission
-      socketRef.current.emit("subscribe", activationId);
+      socketRef.current.emit("subscribe", res.data.submission_id);
       socketRef.current.on("result", handleResult);
 
     } catch (err) {
@@ -299,6 +261,8 @@ public class Main {
 
   const machineRun = async () => {
     setMachineOutput(null);
+    setIsMachineRun(true);
+    setLastInput(machineInput);
 
     const payload = {
       customTestcase: encodeBase64(machineInput),
@@ -315,7 +279,7 @@ public class Main {
         }
       );
       
-      setActivationId(res.data.submission_id);
+      // setActivationId(res.data.submission_id);
 
       const handleResult = (data) => {
         console.log(data);
@@ -326,14 +290,16 @@ public class Main {
             : `${data.status} : ${data.message}`
         );
 
-       
+        setIsMachineRun(false);
+
+        
 
         // Remove listener after handling result
         socketRef.current.off("result", handleResult);
       };
 
       // Subscribe to this submission
-      socketRef.current.emit("subscribe", activationId);
+      socketRef.current.emit("subscribe", res.data.submission_id);
       socketRef.current.on("result", handleResult);
       
     } catch (err) {
@@ -363,8 +329,12 @@ public class Main {
         <Navbar />
       </nav>
 
+      <div className="mt-5 flex justify-end w-[80vw] ml-[17vw] p-4 ">
+        <Timer/>
+      </div>
+
       {/* Tabs & Language Selector */}
-      <div className="w-full text-white mt-15 flex justify-end pr-[1.5%]">
+      <div className="w-full text-white mt-5 flex justify-end pr-[1.5%]">
         <div className="w-1/2 text-white mt-10 flex flex-row justify-start gap-4 p-4  rounded-2xl shadow-md bg-[#1A1A1A]">
           {["description", "sampleCase", "Submissions"].map((tab) => (
             <div
@@ -454,7 +424,8 @@ public class Main {
             </div>
 
             <button
-              className="mt-3 bg-[#CAFF33] text-black font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-[#292929] border-2 border-[#CAFF33] hover:text-[#CAFF33] transition-all duration-200"
+              disabled={isMachineRun  || lastInput === machineInput}
+              className="mt-3 bg-[#CAFF33] text-black font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-[#292929] border-2 border-[#CAFF33] hover:text-[#CAFF33] transition-all duration-200 disabled:bg-[#7D9900] disabled:cursor-not-allowed disabled:opacity-70"
               onClick={machineRun}
             >
               Machine Run
@@ -578,12 +549,12 @@ public class Main {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-row gap-2">
+              <div className="flex flex-row gap-4">
                 <textarea
                   value={customInput}
                   onChange={(e) => setCustomInput(e.target.value)}
                   placeholder="Enter custom input..."
-                  className="w-full h-[120px] p-3 bg-[#1C1C1C]/40 text-white rounded-lg resize-none focus:outline-none border border-[#CAFF33]"
+                  className="w-full h-[150px] p-3 bg-[#1C1C1C]/40 text-white rounded-lg resize-none focus:outline-none border border-[#CAFF33]"
                 />
 
                 <div className="w-full h-[120px] text-white orbitron text-sm sm:text-base md:text-lg p-4 overflow-y-auto bg-[#1C1C1C]/40 rounded-lg border border-[#CAFF33]">
@@ -597,7 +568,7 @@ public class Main {
           <div className="mt-10 flex gap-3 justify-end text-black font-bold text-xl">
             <button
               onClick={runCode}
-              disabled={isRunning}
+              disabled={isRunning }
               className="w-[150px] h-[50px] bg-[#CAFF33] disabled:bg-[#7D9900] disabled:cursor-not-allowed border-2 border-[#CAFF33] rounded-md hover:bg-[#292929] hover:text-[#CAFF33] transition-colors shadow-md"
             >
               Run

@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const backend_url=import.meta.env.VITE_API_URL;
-
+console.log(import.meta.env.VITE_API_URL)
+console.log(backend_url)
 const Login = () => {
   const [formData, setFormData] = useState({
     username: "",

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-
+import Timer from "../components/Timer"
 const backend_url = import.meta.env.VITE_API_URL;
 
 const QuestionHub = () => {
@@ -40,6 +40,10 @@ const QuestionHub = () => {
           QUESTION HUB
         </h1>
         <div className="w-32 h-1 bg-gradient-to-r from-transparent via-[#CAFF33] to-transparent mx-auto mt-4"></div>
+      </div>
+
+      <div>
+        <Timer/>
       </div>
 
       {/* Grid */}
