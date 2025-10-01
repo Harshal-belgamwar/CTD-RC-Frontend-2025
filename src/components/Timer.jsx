@@ -40,11 +40,11 @@ function EventTimer() {
     if (ms <= 0) return "Event Ended";
 
     const seconds = Math.floor(ms / 1000) % 60;
-    const minutes = Math.floor(ms / (1000 * 60));
-    // const hours = Math.floor(ms / (1000 * 60 * 60)) % 24;
+    const minutes = Math.floor(ms / (1000 * 60))%60;
+    const hours = Math.floor(ms / (1000 * 60 * 60)) % 24;
     // const days = Math.floor(ms / (1000 * 60 * 60 * 24));
 
-    return `${minutes}m ${seconds}s`;
+    return ` ${hours} : ${minutes} : ${seconds}`;
   };
 
   if (remainingMs === null) return <p>Loading...</p>;

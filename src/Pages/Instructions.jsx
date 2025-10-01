@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 const instructionsData = [
   {
     number: "01",
-    text: "There will be 4 problems in total.",
+    text: "There will be 4 problems in total. Each problem will carry equal score.",
   },
   {
     number: "02",
-    text: "Each problem will carry equal score.",
+    text: "Time duration: 45 minutes",
   },
   {
     number: "03",

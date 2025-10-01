@@ -8,6 +8,9 @@ import Leaderboard from "./Pages/Leaderboard";
 import Results from "./Pages/Results";
 import { toast, ToastContainer } from "react-toastify";
 import FullscreenMonitor from "./Pages/FullScreenMonitor";
+import ProtectedRoutes from "./ProtectedRoutes/ProtectedRoutes";
+import PublicRoutes from "./ProtectedRoutes/PublicRoutes";
+
 
 function App() {
 
@@ -36,18 +39,19 @@ function App() {
       if (e.ctrlKey && e.shiftKey && ["I", "J"].includes(e.key)) e.preventDefault();
       if (
         (e.ctrlKey && ["c", "v", "x", "u"].includes(e.key.toLowerCase())) ||
-        e.key === "F12"
+        e.key === "F12" 
       ) {
         e.preventDefault();
-        toast.warn("⚠ Actions like Copy/Paste are disabled!",{autoClose: 1000});
+        toast.warn("⚠ Actions like Copy/Paste are disabled!",{autoClose: 3000});
       }
+      
     };
     document.addEventListener("keydown", blockKeys);
 
     // Detect tab switching
     const handleVisibility = () => {
       if (document.hidden && switchTab) {
-        toast.error("⚠ Tab switching is not allowed!",{autoClose: 1000});
+        toast.error("⚠ Tab switching is not allowed!",{autoClose: 3000});
         // Optional: you could add logic here to end the test or log the event
       }
     };
@@ -81,15 +85,22 @@ function App() {
         
       />
 
-      {showFullscreenMonitor && <FullscreenMonitor/>}
+      {showFullscreenMonitor && <FullscreenMonitor />}
 
       <Routes>
+        <Route element={<PublicRoutes/>}>
         <Route path="/" element={<Login />} />
+
+        </Route>
+
+
+        <Route element={<ProtectedRoutes/>}>
         <Route path="/instructions" element={<Instructions />} />
         <Route path="/questionhub" element={<QuestionHub />} />
         <Route path="/codeeditor" element={<CodeEditor />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/results" element={<Results />} />
+        </Route>
       </Routes>
       {/* <Login /> */}
       {/* <Instructions /> */}

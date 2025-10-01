@@ -32,7 +32,7 @@ const CodeEditor = () => {
   const [machineInput, setMachineInput] = useState("");
   const [machineOutput, setMachineOutput] = useState(null);
 
-  const [editorHeight, setEditorHeight] = useState("500px");
+  // const [editorHeight, setEditorHeight] = useState("700px");
 
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -70,38 +70,35 @@ public class Main {
   };
 
   //Load save
-  useEffect(() => {
+  useEffect(() => { 
     if (!question?.id) return;
     const saved = localStorage.getItem(`code_q${question.id}_${language}`);
-    console.log(saved);
+    // console.log(saved);
     if (saved) setCode(saved);
     else setCode(defaultCode[language]);
-  }, [question?.id, language]);
+  }, [question, language]);
 
   // Auto-save code
   useEffect(() => {
+    // console.log(question.id )
     if (!question?.id) return;
+
     const timer = setTimeout(() => {
       localStorage.setItem(`code_q${question.id}_${language}`, code);
     }, 1000);
     return () => clearTimeout(timer);
-  }, [code, question?.id, language]);
-
-
-  useEffect(() => {
-    setCode(defaultCode[language]);
-  }, [language]);
+  }, [code, question, language]);
 
   // Adjust editor height
-  useEffect(() => {
-    const updateHeight = () => {
-      if (leftColRef.current)
-        setEditorHeight(`${leftColRef.current.clientHeight}px`);
-    };
-    updateHeight();
-    window.addEventListener("resize", updateHeight);
-    return () => window.removeEventListener("resize", updateHeight);
-  }, []);
+  // useEffect(() => {
+  //   const updateHeight = () => {
+  //     if (leftColRef.current)
+  //       setEditorHeight(`${leftColRef.current.clientHeight}px`);
+  //   };
+  //   updateHeight();
+  //   window.addEventListener("resize", updateHeight);
+  //   return () => window.removeEventListener("resize", updateHeight);
+  // }, []);
 
   //fetch question
 
@@ -113,7 +110,7 @@ public class Main {
           `${BACKEND_URL}/problems/${questionIndex}`,
           { withCredentials: true }
         );
-        console.log(res.data);
+        // console.log(res.data.id);
         setQuestion(res.data);
         
       } catch (err) {
@@ -133,7 +130,7 @@ public class Main {
       });
 
       socketRef.current.on("connect", () => {
-        console.log("Socket connected:", socketRef.current.id);
+        // console.log("Socket connected:", socketRef.current.id);
       });
     }
 
@@ -167,12 +164,12 @@ public class Main {
         withCredentials: true,
       });
 
-      console.log(res.data.submission_id);
+      // console.log(res.data.submission_id);
 
       // setActivationId(res.data.submission_id);
 
       const handleResult = (data) => {
-        console.log(data);
+        // console.log(data);
         if (data.user_output) {
           setOutput(data.user_output);
         } else {
@@ -216,13 +213,13 @@ public class Main {
         { withCredentials: true }
       );
 
-      console.log(res.error);
+      // console.log(res.error);
 
       // Save submission_id to trigger useEffect
       
 
       const handleResult = (data) => {
-        console.log(data);
+        // console.log(data);
         const parsedData = {
           status: data.status || "unknown",
           message: data.message || "",
@@ -285,7 +282,7 @@ public class Main {
       // setActivationId(res.data.submission_id);
 
       const handleResult = (data) => {
-        console.log(data);
+        // console.log(data);
 
         setMachineOutput(
           data.user_output
@@ -427,7 +424,7 @@ public class Main {
             </div>
 
             <button
-              disabled={isMachineRun  || lastInput === machineInput}
+              disabled={isMachineRun  || lastInput === machineInput || machineInput === ""}
               className="mt-3 bg-[#CAFF33] text-black font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-[#292929] border-2 border-[#CAFF33] hover:text-[#CAFF33] transition-all duration-200 disabled:bg-[#7D9900] disabled:cursor-not-allowed disabled:opacity-70"
               onClick={machineRun}
             >
@@ -439,7 +436,7 @@ public class Main {
         {/* Right Column: Code Editor + Custom Test Case / Submission Results */}
         <div
           className="w-full lg:w-1/2 flex flex-col  rounded-lg shadow-md bg-[#1C1C1C] p-3  "
-          style={{ height: editorHeight }}
+          style={{ height: "700px"}}
         >
           {/* Editor */}
           <div className="flex-1 border border-[#CAFF33]">
@@ -447,7 +444,7 @@ public class Main {
               height="100%"
               language={language}
               value={code}
-              onChange={(value) => setCode(value || "")}
+              onChange={(value) => setCode(value )}
               options={{
                 fontSize: 15,
                 fontFamily: "Fira Code, monospace",
@@ -560,7 +557,7 @@ public class Main {
                   className="w-full h-[150px] p-3 bg-[#1C1C1C]/40 text-white rounded-lg resize-none focus:outline-none border border-[#CAFF33]"
                 />
 
-                <div className="w-full h-[120px] text-white orbitron text-sm sm:text-base md:text-lg p-4 overflow-y-auto bg-[#1C1C1C]/40 rounded-lg border border-[#CAFF33]">
+                <div className="w-full h-[150px] text-white orbitron text-sm sm:text-base md:text-lg p-4 overflow-y-auto bg-[#1C1C1C]/40 rounded-lg border border-[#CAFF33]">
                   <div>Output:</div>
                   <pre>{output ?? ""}</pre>
                 </div>

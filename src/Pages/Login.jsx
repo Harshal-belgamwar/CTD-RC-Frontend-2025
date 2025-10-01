@@ -4,14 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const backend_url=import.meta.env.VITE_API_URL;
-console.log(import.meta.env.VITE_API_URL)
-console.log(backend_url)
+// console.log(import.meta.env.VITE_API_URL)
+// console.log("Backend URL: ",backend_url)
 const Login = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
     event_id: 2,
     isjunior: false,
+    isVerified: false
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -19,26 +20,28 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
      
       const response = await axios.post(
         `${backend_url}/user/login`,
-        formData,
+        {username: formData.username.trim(),password: formData.password.trim(),event_id: formData.event_id,isjunior: formData.isjunior, isVerified: formData.isVerified},
         { withCredentials: true }
       );
 
-      
+      // console.log("Login Response: ", response);
 
       if (response?.status === 200) {
-        
 
         localStorage.setItem("currentUser", JSON.stringify(response.data.user));
-
+        localStorage.setItem("isVerified", (response.data.isVerified));
         
         toast.success(response.data.message, {
           position: "top-center",
           autoClose: 1000,
         });
+
+        
 
         navigate("/instructions");
       }
@@ -93,7 +96,7 @@ const Login = () => {
               id="username"
               value={formData.username}
               onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
+                setFormData({ ...formData, username: e.target.value})
               }
               required
               placeholder="Enter username"
@@ -113,7 +116,7 @@ const Login = () => {
               id="password"
               value={formData.password}
               onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
+                setFormData({ ...formData, password: e.target.value})
               }
               required
               placeholder="Enter password"
