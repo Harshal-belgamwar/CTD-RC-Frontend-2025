@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Timer from "../components/Timer"
+import Timer from "../components/Timer";
 const backend_url = import.meta.env.VITE_API_URL;
 
 const QuestionHub = () => {
@@ -12,12 +12,10 @@ const QuestionHub = () => {
   // fetch questions from backend
   useEffect(() => {
     const getQuestions = async () => {
-      const response = await axios.get(
-        `${backend_url}/problems/accuracy`,
-        { withCredentials: true }
-      );
+      const response = await axios.get(`${backend_url}/problems/accuracy`, {
+        withCredentials: true,
+      });
       setAccuracy(response.data);
-      
     };
     getQuestions();
   }, []);
@@ -41,9 +39,9 @@ const QuestionHub = () => {
         </h1>
         <div className="w-32 h-1 bg-gradient-to-r from-transparent via-[#CAFF33] to-transparent mx-auto mt-4"></div>
       </div>
-
-      <div>
-        <Timer/>
+      
+      <div className="mt-5 flex justify-end w-[85vw]  p-4 ">
+        <Timer />
       </div>
 
       {/* Grid */}

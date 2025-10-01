@@ -38,7 +38,7 @@ const CodeEditor = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
    const [isMachineRun, setIsMachineRun] = useState(false);
 
-  const [activeTab, setActiveTab] = useState("description");
+  const [activeTab, setActiveTab] = useState("Description");
   const [question, setQuestion] = useState({});
   const [userSubmissions, setUserSubmissions] = useState([]);
 
@@ -73,6 +73,7 @@ public class Main {
   useEffect(() => {
     if (!question?.id) return;
     const saved = localStorage.getItem(`code_q${question.id}_${language}`);
+    console.log(saved);
     if (saved) setCode(saved);
     else setCode(defaultCode[language]);
   }, [question?.id, language]);
@@ -112,7 +113,9 @@ public class Main {
           `${BACKEND_URL}/problems/${questionIndex}`,
           { withCredentials: true }
         );
+        console.log(res.data);
         setQuestion(res.data);
+        
       } catch (err) {
         console.error("Error fetching question:", err);
       }
@@ -336,7 +339,7 @@ public class Main {
       {/* Tabs & Language Selector */}
       <div className="w-full text-white mt-5 flex justify-end pr-[1.5%]">
         <div className="w-1/2 text-white mt-10 flex flex-row justify-start gap-4 p-4  rounded-2xl shadow-md bg-[#1A1A1A]">
-          {["description", "sampleCase", "Submissions"].map((tab) => (
+          {["Description", "SampleCase", "Submissions"].map((tab) => (
             <div
               key={tab}
               className={`cursor-pointer px-3 py-1 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200
@@ -379,12 +382,12 @@ public class Main {
         <div className="w-full flex flex-col lg:w-1/2  gap-4 overflow-y-auto rounded-lg shadow-xl bg-gradient-to-b from-[#1C1C1C] to-[#2A2A2A] p-4">
           {/* Question / Samples / Submissions */}
           <div className="border-2 border-[#CAFF33] p-4 rounded-lg bg-[#1B1B1B] shadow-inner">
-            {activeTab === "description" && (
+            {activeTab === "Description" && (
               <Description
                 Question={question || { title: "", description: "", points: 0 }}
               />
             )}
-            {activeTab === "sampleCase" && (
+            {activeTab === "SampleCase" && (
               <Sample samples={question.samples || []} />
             )}
             {activeTab === "Submissions" && (

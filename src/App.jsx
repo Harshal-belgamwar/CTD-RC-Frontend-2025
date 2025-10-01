@@ -51,6 +51,8 @@ function App() {
         // Optional: you could add logic here to end the test or log the event
       }
     };
+
+     document.addEventListener("visibilitychange", handleVisibility);
   
   
 
