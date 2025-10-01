@@ -336,7 +336,7 @@ public class Main {
       {/* Tabs & Language Selector */}
       <div className="w-full text-white mt-5 flex justify-end pr-[1.5%]">
         <div className="w-1/2 text-white mt-10 flex flex-row justify-start gap-4 p-4  rounded-2xl shadow-md bg-[#1A1A1A]">
-          {["description", "sampleCase", "Submissions"].map((tab) => (
+          {["Description", "SampleCase", "Submissions"].map((tab) => (
             <div
               key={tab}
               className={`cursor-pointer px-3 py-1 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200
