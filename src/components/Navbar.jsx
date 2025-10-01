@@ -1,5 +1,6 @@
 import { NavLink ,useNavigate} from "react-router-dom";
 import axios from "axios";
+import rc_image from "../../public/RC.png"
 
 const backend_url = import.meta.env.VITE_API_URL;
 
@@ -32,7 +33,7 @@ const Navbar = () => {
     <div className=" w-[80%] h-[8%] rounded-[50px] px-2 py-3 bg-[#292929] mx-auto flex justify-between items-center tracking-wide">
       {/* Logo */}
       <div className="pl-8 text-4xl text-center font-bold text-[#FFFFFF] leading-[100%] text-transparent bg-clip-text bg-gradient-to-r from-[#CAFF33] via-[#8BC34A] to-[#CAFF33]">
-        RC
+        <img className="h-[50px]" src={rc_image} alt="" />
       </div>
 
       {/* Nav Links */}

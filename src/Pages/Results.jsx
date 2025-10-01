@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import alien from "../assets/alien.png";
+import { toast } from "react-toastify";
 
 const backend_url = import.meta.env.VITE_API_URL;
 
@@ -25,7 +26,11 @@ function Results() {
         const res = await axios.get(`${backend_url}/result/`, { withCredentials: true });
         setResult(res.data);
       } catch (err) {
-        console.error("Error fetching result:", err);
+        // console.error("Error fetching result:", err);
+        toast.error("Something went wrong", {
+          position: "top-center",
+          autoClose: 2000,
+        });
       }
     };
 

@@ -44,6 +44,11 @@ function App() {
         e.preventDefault();
         toast.warn("⚠ Actions like Copy/Paste are disabled!",{autoClose: 3000});
       }
+
+      if (e.shiftKey && e.key === "Insert") {
+    e.preventDefault();
+    toast.warn("⚠ Paste using Shift+Insert is disabled!", { autoClose: 3000 });
+  }
       
     };
     document.addEventListener("keydown", blockKeys);

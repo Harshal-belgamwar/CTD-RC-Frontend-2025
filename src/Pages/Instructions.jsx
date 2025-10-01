@@ -16,12 +16,12 @@ const instructionsData = [
   },
   {
     number: "04",
-    text: "Use of AI tools, external help, or any form of cheating is strictly prohibited. All codes will be checked for plagiarism – violators will be disqualified.",
+    text: "Use of AI tools, external help, or any form of cheating is strictly prohibited. All codes will be checked for plagiarism - violators will be disqualified.",
   },
  
   {
     number: "05",
-    text: "Exiting the full screen 3 times will log out the user automatically.",
+    text: "Exiting the full screen or switching tabs 3 times will log out the user automatically.",
   },
 ];
 

@@ -2,6 +2,8 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import rc_image from "../../public/RC.png"
+
 
 const backend_url=import.meta.env.VITE_API_URL;
 // console.log(import.meta.env.VITE_API_URL)
@@ -29,7 +31,6 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      // console.log("Login Response: ", response);
 
       if (response?.status === 200) {
 
@@ -41,17 +42,20 @@ const Login = () => {
           autoClose: 1000,
         });
 
+
+  
+
         
 
         navigate("/instructions");
       }
     } catch (err) {
-     
       if (err.response?.status === 501) {
         toast.error(err.response.data.message, {
           position: "top-center",
           autoClose: 2000,
         });
+        localStorage.setItem("isVerified", (err.response.data.isVerified));
         navigate("/results");
         return;
       }
@@ -77,7 +81,8 @@ const Login = () => {
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center bg-[#191919] bg-cover bg-center tracking-wide">
       <p className="absolute top-8 left-8 text-[#CAFF33] font-bold text-6xl tracking-wide">
-        RC
+        <img className="h-[100px]" src={rc_image} alt="" />
+        
       </p>
       <div className="backdrop-blur-lg p-10 rounded-[20px] w-full max-w-md flex flex-col items-center justify-center min-h-[500px] h-80 bg-[#191919] bg-[radial-gradient(circle_at_0%_0%,rgba(83,172,58,0.4)_0%,transparent_30%),radial-gradient(circle_at_100%_100%,rgba(83,172,58,0.4)_0%,transparent_30%)]">
         <h1 className="text-[#CAFF33] font-bold text-4xl mb-13">Login</h1>

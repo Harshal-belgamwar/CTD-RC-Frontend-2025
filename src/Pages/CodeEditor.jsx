@@ -8,6 +8,7 @@ import Sample from "../components/Sample";
 import Submissions from "../components/Submissions";
 import { io } from "socket.io-client";
 import Timer from "../components/Timer";
+import { toast } from "react-toastify";
 
 const BACKEND_URL = import.meta.env.VITE_API_URL;
 
@@ -114,7 +115,11 @@ public class Main {
         setQuestion(res.data);
         
       } catch (err) {
-        console.error("Error fetching question:", err);
+        toast.error("Something went wrong", {
+          position: "top-center",
+          autoClose: 2000,
+        });
+        // console.error("Error fetching question:", err);
       }
     };
     fetchQuestion();
@@ -251,11 +256,10 @@ public class Main {
         navigate("/results");
       }
 
-      console.error("Submission error:", err);
-      setSubmitResult({
-        status: "error",
-        message: err,
-      });
+      toast.error("Something went wrong", {
+          position: "top-center",
+          autoClose: 2000,
+        });
     }
   };
 
