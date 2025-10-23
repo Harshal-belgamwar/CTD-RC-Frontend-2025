@@ -1,12 +1,79 @@
-# React + Vite
+# ⚡ CTD-RC – Real-Time Online Judge Platform (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🧑‍💻 CTD-RC (Code • Test • Debug – Real-time Collaboration)
+A modern desktop-first online judge platform that brings coding, collaboration, and competition together — built with React.js, Tailwind CSS, and Socket.io.
 
-Currently, two official plugins are available:
+<p align="center"> <img src="https://img.shields.io/badge/React-18.0-blue?style=for-the-badge&logo=react" /> <img src="https://img.shields.io/badge/TailwindCSS-3.0-38B2AC?style=for-the-badge&logo=tailwindcss" /> <img src="https://img.shields.io/badge/Socket.io-Live%20Sync-000000?style=for-the-badge&logo=socket.io" /> <img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge" /> </p>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Overview
 
-## Expanding the ESLint configuration
+CTD-RC is a real-time competitive coding frontend built for desktop users, providing:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+💬 Live code collaboration with Socket.io
+
+💻 Optimized editor layout using Tailwind CSS
+
+⚙️ Real-time code execution support
+
+🪟 Secure environment via window event control (disable reloads, shortcuts, right-click)
+
+🏆 Contest-ready interface with instant verdicts and updates
+
+🎯 Designed for coding competitions, classrooms, and real-time problem-solving sessions.
+
+## ✨ Features at a Glance
+Feature	Description
+
+⚡ Live Collaboration	Real-time sockets connect participants instantly
+
+💻 Desktop-First Design	Optimized for large screens & productivity
+
+🧠 Code Execution Integration	Seamless link to backend compilers (Judge0 / Node sandbox)
+
+🪟 Window Event Protection	Prevents refresh, right-click, or tab switch during contests
+
+📊 Dynamic Problem Display	Instantly shows problem details, inputs, and verdicts
+
+🧩 Lightweight Build	Fast load times and scalable UI architecture
+
+## 🧠 Tech Stack
+
+Frontend
+⚛️ React.js
+
+Styling
+🎨 Tailwind CSS
+
+Real-Time
+🔌 Socket.io
+
+Language
+🟨 JavaScript (ES6)
+
+Utility
+🪟 Window Event API
+
+
+
+# ⚙️ Getting Started
+## Clone the repository
+git clone https://github.com/Harshal-belgamwar/CTD-RC-Frontend-2025
+
+## Navigate into the project folder
+cd CTD-RC-Frontend-2025
+
+## Install dependencies
+npm install
+
+## Start the development server
+npm run dev
+
+
+
+## 👨‍💻 Author
+
+**Harshal Belgamwar**  
+
+📧 **Email:** [harshalbelgamwar@gmail.com](mailto:harshalbelgamwar@gmail.com)  
+
+💼 **LinkedIn:** [Harshal Belgamwar](https://www.linkedin.com/in/harshal-belgamwar/)
