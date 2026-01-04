@@ -68,6 +68,7 @@ npm install
 ## Start the development server
 npm run dev
 
+video: https://youtu.be/CtzCkZDIG1s
 
 
 ## 👨‍💻 Author
