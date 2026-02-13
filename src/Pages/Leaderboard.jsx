@@ -15,8 +15,16 @@ const fetchStudents = async () => {
       },
     });
     
+    console.log(response)
 
     // Transform backend response into frontend format
+    return response.data.map((item) => ({
+      username: item.teamname,
+      scores: [item.problem_1, item.problem_2, item.problem_3, item.problem_4],
+      total: item.total_score,
+      time: new Date(item.last_submission_time).toLocaleTimeString(),
+    }));
+        // Transform backend response into frontend format
     return response.data.map((item) => ({
       username: item.username2
         ? `${item.username1} & ${item.username2}`
@@ -67,7 +75,7 @@ function Leaderboard() {
     setPage((p) => Math.min(p + 1, totalPages - 1));
   };
 
-
+  console.log("Leaderboard")
   return (
     <>
       <div className="h-[100vh] w-[100vw] bg-[#191919] box-border overflow-x-hidden ">

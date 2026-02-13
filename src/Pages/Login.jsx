@@ -6,7 +6,7 @@ import rc_image from "../../public/RC.png"
 
 
 const backend_url=import.meta.env.VITE_API_URL;
-// console.log(import.meta.env.VITE_API_URL)
+console.log(import.meta.env.VITE_API_URL)
 // console.log("Backend URL: ",backend_url)
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -27,7 +27,7 @@ const Login = () => {
      
       const response = await axios.post(
         `${backend_url}/user/login`,
-        {username: formData.username.trim(),password: formData.password.trim(),event_id: formData.event_id,isjunior: formData.isjunior, isVerified: formData.isVerified},
+        {teamname:"team",username: formData.username.trim(),password: formData.password.trim(),event_id: formData.event_id,isjunior: formData.isjunior, isVerified: formData.isVerified},
         { withCredentials: true }
       );
 

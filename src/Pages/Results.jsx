@@ -10,6 +10,7 @@ function Results() {
   const [result, setResult] = useState({
     event_id: 2,
     team_id: 0,
+    teamname:"",
     username1: "",
     username2: null,
     isjunior: false,
@@ -55,7 +56,7 @@ function Results() {
         <div className="h-full w-[50%] flex flex-col justify-center items-center gap-10">
           <img src={alien} alt="Alien" className="w-[23%] h-[23%]" />
           <div className="w-[363px] h-[53px] font-bold text-[45px] text-center text-[#FFFFFF] leading-[100%]">
-             {`${result.username1} ${result.username2 ? `& ${result.username2}` : ""}`}
+             {`${result.teamname}`}
           </div>
           <div className="w-[229px] h-[64px] rounded-[30px] bg-[#CAFF33] flex justify-center items-center">
             <div className="w-fit h-fit font-bold text-[30px] leading-[100%] text-[#191919] text-center">

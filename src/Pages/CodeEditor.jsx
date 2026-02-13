@@ -174,7 +174,7 @@ public class Main {
       // setActivationId(res.data.submission_id);
 
       const handleResult = (data) => {
-        // console.log(data);
+        console.log("RUN DATA",data);
         if (data.user_output) {
           setOutput(data.user_output);
         } else {
