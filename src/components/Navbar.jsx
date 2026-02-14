@@ -1,6 +1,6 @@
-import { NavLink ,useNavigate} from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
-import rc_image from "../../public/RC.png"
+import rc_image from "../../public/RC_Logo (3).png"
 
 const backend_url = import.meta.env.VITE_API_URL;
 
@@ -24,70 +24,112 @@ const Navbar = () => {
     );
 
     navigate("/");
-};
+  };
 
-  
 
-  
+
+
   return (
-    <div className=" w-[80%] h-[8%] rounded-[50px] px-2 py-3 bg-[#292929] mx-auto flex justify-between items-center tracking-wide">
+    <div className="w-[90%] h-[13vh] max-w-7xl mx-auto flex justify-between items-center px-10 py-4 mt-8 rounded-2xl bg-transparent tracking-wide">
       {/* Logo */}
-      <div className="pl-8 text-4xl text-center font-bold text-[#FFFFFF] leading-[100%] text-transparent bg-clip-text bg-gradient-to-r from-[#CAFF33] via-[#8BC34A] to-[#CAFF33]">
-        <img className="h-[50px]" src={rc_image} alt="" />
+      <div className="flex items-center">
+        <img className="h-[55px]" src={rc_image} alt="RC Logo" />
       </div>
 
       {/* Nav Links */}
-      <div className="flex justify-evenly gap-15 items-center">
-        <NavLink
-          to="/instructions"
-          className={({ isActive }) =>
-            `text-md text-center font-bold leading-[100%] ${
-              isActive
-                ? "text-[#CAFF33]"
-                : "text-[#FFFFFF] hover:text-[#CAFF33]"
-            }`
-          }
-        >
-          INSTRUCTIONS
-        </NavLink>
-
-        <NavLink
-          to="/questionhub"
-          className={({ isActive }) =>
-            `text-md text-center font-bold leading-[100%] ${
-              isActive
-                ? "text-[#CAFF33]"
-                : "text-[#FFFFFF] hover:text-[#CAFF33]"
-            }`
-          }
-        >
-          QUESTION HUB
-        </NavLink>
-
-        <NavLink
-          to="/leaderboard"
-          className={({ isActive }) =>
-            `text-md text-center font-bold leading-[100%] ${
-              isActive
-                ? "text-[#CAFF33]"
-                : "text-[#FFFFFF] hover:text-[#CAFF33]"
-            }`
-          }
-        >
-          LEADERBOARDS
-        </NavLink>
-
-       
+      <div className="flex justify-evenly gap-10 items-center">
+        {["/instructions", "/questionhub", "/leaderboard"].map((path, idx) => {
+          const labels = ["INSTRUCTIONS", "QUESTION HUB", "LEADERBOARDS"];
+          return (
+            <NavLink
+              key={idx}
+              to={path}
+              className={({ isActive }) =>
+                `text-lg font-play font-bold tracking-widest transition-all duration-300
+            ${isActive
+                  ? "text-[#FFEAD7] border-b-2 border-[#CA915F] pb-1 shadow-md"
+                  : "text-[#FFEAD7]/70 hover:text-[#FFEAD7] hover:shadow-sm hover:scale-105"
+                }`
+              }
+            >
+              {labels[idx]}
+            </NavLink>
+          );
+        })}
       </div>
 
       {/* Logout Button */}
-      <button 
-      className="mr-2 bg-[#CAFF33] border-[2px] border-[#4a5f12] p-4  rounded-[50px] text-sm text-center font-extrabold text-[#191919] leading-[100%] hover:bg-[#292929] hover:text-[#CAFF33] cursor-pointer duration-300"
-      onClick={handleLogout}
+      <button
+        className="
+    relative
+    group
+    bg-gradient-to-br from-[#CA915F] via-[#E3B07E] to-[#B87440]
+    text-[#FFFED7] font-bold 
+    px-6 sm:px-8 lg:px-10
+    py-2.5 sm:py-3 lg:py-4
+    text-xs sm:text-sm lg:text-base
+    rounded-lg sm:rounded-xl
+    border-2 border-[#0E0D40]
+    shadow-[0_4px_0_#0E0D40,0_8px_16px_rgba(0,0,0,0.3)]
+    hover:shadow-[0_2px_0_#0E0D40,0_12px_24px_rgba(202,145,95,0.4)]
+    hover:-translate-y-1
+    active:translate-y-1
+    active:shadow-[0_0_0_#0E0D40,0_4px_8px_rgba(0,0,0,0.2)]
+    transform
+    transition-all duration-300
+    overflow-hidden
+    tracking-wider
+    flex items-center justify-center gap-2
+  "
+        style={{ textShadow: "2px 2px 4px rgba(74,18,55,0.5)" }}
+        onClick={handleLogout}
       >
-        LOGOUT
+        {/* Animated gradient overlay */}
+        <div className="
+    absolute inset-0
+    bg-gradient-to-r from-transparent via-white/20 to-transparent
+    translate-x-[-100%] group-hover:translate-x-[100%]
+    transition-transform duration-700
+  " />
+
+        {/* Glowing effect on hover */}
+        <div className="
+    absolute -inset-1
+    bg-gradient-to-r from-[#CA915F]/50 via-[#E3B07E]/50 to-[#B87440]/50
+    rounded-xl
+    opacity-0 group-hover:opacity-100
+    blur-md
+    transition-opacity duration-500
+    -z-10
+  " />
+
+        {/* Corner accents */}
+        <div className="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-[#FFFED7]/50 group-hover:border-[#FFFED7] rounded-tl-lg transition-all duration-300" />
+        <div className="absolute top-1 right-1 w-3 h-3 border-t-2 border-r-2 border-[#FFFED7]/50 group-hover:border-[#FFFED7] rounded-tr-lg transition-all duration-300" />
+        <div className="absolute bottom-1 left-1 w-3 h-3 border-b-2 border-l-2 border-[#FFFED7]/50 group-hover:border-[#FFFED7] rounded-bl-lg transition-all duration-300" />
+        <div className="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-[#FFFED7]/50 group-hover:border-[#FFFED7] rounded-br-lg transition-all duration-300" />
+
+
+
+        {/* Button text */}
+        <span className="relative z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] text-[#4A1237] text-xl font-bold font-play ">
+          LOGOUT
+        </span>
+
+        {/* Ripple effect on hover */}
+        <div className="
+    absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+    w-0 h-0
+    rounded-full
+    bg-white/20
+    group-hover:w-[200px] group-hover:h-[200px]
+    transition-all duration-700
+    opacity-0 group-hover:opacity-100
+  " />
       </button>
+
     </div>
+
   );
 };
 

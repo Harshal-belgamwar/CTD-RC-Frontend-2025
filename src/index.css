@@ -1,24 +1,27 @@
 /* 1. import fonts first */
-@import url("https://fonts.googleapis.com/css2?family=Lobster&family=Red+Hat+Display:wght@300..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Play:wght@500;700&display=swap');
 
 /* 2. import tailwind */
 @import "tailwindcss";
 
 /* 3. define theme tokens */
 @theme {
-  --font-redhat: "Red Hat Display", sans-serif;
-  --font-lobster: "Lobster", cursive;
+
+  --font-play: "Play";
+  --font-stranger: "Stranger Doctor";
 }
 
 /* 4. base layer styles */
-@layer base {
-  body {
-    font-family: var(--font-redhat);
-  }
+@font-face {
+  font-family: 'Stranger Doctor';
+  src: url('/fonts/Stranger Doctor.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+
 }
 
-body{
-  margin-top: 5vh;
-  background-color:#191919 ;
+body {
+
+  background-color: #191919;
 
 }

@@ -2,19 +2,19 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import rc_image from "../../public/RC.png"
+import rc_image from "/RC_Logo (3).png";
+import bg_image from "/background.svg";
+import login_image from "/LOGIN.svg";
 
+const backend_url = import.meta.env.VITE_API_URL;
 
-const backend_url=import.meta.env.VITE_API_URL;
-// console.log(import.meta.env.VITE_API_URL)
-// console.log("Backend URL: ",backend_url)
 const Login = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
     event_id: 2,
     isjunior: false,
-    isVerified: false
+    isVerified: false,
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -22,30 +22,28 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
-     
       const response = await axios.post(
         `${backend_url}/user/login`,
-        {username: formData.username.trim(),password: formData.password.trim(),event_id: formData.event_id,isjunior: formData.isjunior, isVerified: formData.isVerified},
+        {
+          username: formData.username.trim(),
+          password: formData.password.trim(),
+          event_id: formData.event_id,
+          isjunior: formData.isjunior,
+          isVerified: formData.isVerified,
+        },
         { withCredentials: true }
       );
 
-
       if (response?.status === 200) {
-
         localStorage.setItem("currentUser", JSON.stringify(response.data.user));
-        localStorage.setItem("isVerified", (response.data.isVerified));
-        
+        localStorage.setItem("isVerified", response.data.isVerified);
+
         toast.success(response.data.message, {
           position: "top-center",
           autoClose: 1000,
         });
-
-
-  
-
-        
 
         navigate("/instructions");
       }
@@ -55,7 +53,7 @@ const Login = () => {
           position: "top-center",
           autoClose: 2000,
         });
-        localStorage.setItem("isVerified", (err.response.data.isVerified));
+        localStorage.setItem("isVerified", err.response.data.isVerified);
         navigate("/results");
         return;
       }
@@ -72,121 +70,118 @@ const Login = () => {
         position: "top-center",
         autoClose: 2000,
       });
-      
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center bg-[#191919] bg-cover bg-center tracking-wide">
-      <p className="absolute top-8 left-8 text-[#CAFF33] font-bold text-6xl tracking-wide">
-        <img className="h-[100px]" src={rc_image} alt="" />
-        
-      </p>
-      <div className="backdrop-blur-lg p-10 rounded-[20px] w-full max-w-md flex flex-col items-center justify-center min-h-[500px] h-80 bg-[#191919] bg-[radial-gradient(circle_at_0%_0%,rgba(83,172,58,0.4)_0%,transparent_30%),radial-gradient(circle_at_100%_100%,rgba(83,172,58,0.4)_0%,transparent_30%)]">
-        <h1 className="text-[#CAFF33] font-bold text-4xl mb-13">Login</h1>
+    <div className="relative min-h-screen w-full overflow-hidden">
+      {/* BACKGROUND IMAGE */}
+      <img
+        src={bg_image}
+        alt="Background"
+        className="absolute inset-0 w-full h-full object-cover "
+      />
 
-        <form className="space-y-8 w-full " onSubmit={handleSubmit}>
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-white text-sm font-medium mb-2 tracking-widest ml-1"
-            >
-              USERNAME
-            </label>
+      {/* BLUR OVERLAY */}
+      <div className="absolute inset-0 backdrop-blur-md bg-[#0E0D40]/40"></div>
 
-            <input
-              type="text"
-              id="username"
-              value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value})
-              }
-              required
-              placeholder="Enter username"
-              className="w-full px-4 py-3 bg-transparent border-[2px] border-[#3D633F] text-white rounded-[50px] focus:outline-none focus:ring-2 focus:ring-[#3D633F] placeholder:text-sm"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-white text-sm font-medium mb-2 tracking-widest ml-1"
-            >
-              PASSWORD
-            </label>
+      {/* RC LOGO */}
+      <div className="absolute top-6 left-6 z-20">
+        <img src={rc_image} className="h-[90px]" alt="RC Logo" />
+      </div>
 
-            <input
-              type="password"
-              id="password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value})
-              }
-              required
-              placeholder="Enter password"
-              className="w-full px-4 py-3 bg-transparent border-[2px] border-[#3D633F] text-white rounded-[50px] focus:outline-none focus:ring-2 focus:ring-[#3D633F] placeholder:text-sm"
-            />
+      {/* FORM CONTAINER */}
+      <div className="relative z-20 min-h-screen flex items-center justify-center">
+        <div className="w-full max-w-md p-10 rounded-2xl  bg-transparent flex flex-col gap-20 ">
+          <div className="flex justify-center items-center">
+            <img src={login_image} alt="" className="lg:h-[12vh] h-[10vh] " />
           </div>
 
-          <div className="flex items-center gap-6 mt-4">
-            {/* Junior */}
-            <label className="flex items-center gap-2 cursor-pointer">
+
+          <form className="space-y-7 w-full" onSubmit={handleSubmit}>
+            {/* USERNAME */}
+            <div>
+              <label className="block text-[#FFEAD7] text-xl font-medium mb-2 font-play ml-1">
+                USERNAME
+              </label>
               <input
-                type="radio"
-                name="level"
-                value="junior"
-                checked={formData.isjunior === true}
-                onChange={() => setFormData({ ...formData, isjunior: true })}
-                className="hidden peer"
+                type="text"
+                value={formData.username}
+                onChange={(e) =>
+                  setFormData({ ...formData, username: e.target.value })
+                }
+                required
+                placeholder="Enter username"
+                className="w-full px-4 py-3 bg-[#0E0D40] border-2 border-[#CA915F] text-[#FFEAD7] rounded-md focus:outline-none focus:ring-2 focus:ring-[#CA915F] placeholder:text-[#FFEAD7]/60"
               />
-              <span
-                className="w-5 h-5 rounded-full border-2 border-[#CAFF33] flex-shrink-0
-                     peer-checked:bg-[#CAFF33] peer-checked:shadow-[0_0_5px_#CAFF33]
-                     transition-all duration-300"
-              ></span>
-              <span className="text-gray-300 font-medium">Junior</span>
-            </label>
+            </div>
 
-            {/* Senior */}
-            <label className="flex items-center gap-2 cursor-pointer">
+            {/* PASSWORD */}
+            <div>
+              <label className="block text-[#FFEAD7] text-xl font-medium mb-2 font-play ml-1">
+                PASSWORD
+              </label>
               <input
-                type="radio"
-                name="level"
-                value="senior"
-                checked={formData.isjunior === false}
-                onChange={() => setFormData({ ...formData, isjunior: false })}
-                className="hidden peer"
+                type="password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                required
+                placeholder="Enter password"
+                className="w-full px-4 py-3 bg-[#0E0D40] border-2 border-[#CA915F] text-[#FFEAD7] rounded-md focus:outline-none focus:ring-2 focus:ring-[#CA915F] placeholder:text-[#FFEAD7]/60"
               />
-              <span
-                className="w-5 h-5 rounded-full border-2 border-[#CAFF33] flex-shrink-0
-                     peer-checked:bg-[#CAFF33] peer-checked:shadow-[0_0_5px_#CAFF33]
-                     transition-all duration-300"
-              ></span>
-              <span className="text-gray-300 font-medium">Senior</span>
-            </label>
-          </div>
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full bg-[#1f1f1f]/70 border-[2px] border-[#CAFF33] text-[#CAFF33] font-extrabold mt-5 py-3 px-4 rounded-[50px] shadow-[0_0_10px_#CAFF33] transition-all duration-300
-    ${
-      loading
-        ? "opacity-70 cursor-not-allowed"
-        : "hover:bg-[#CAFF33] hover:text-[#191919] hover:shadow-[0_0_20px_#CAFF33]"
-    }`}
-          >
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <div className="w-5 h-5 border-4 border-[#CAFF33] border-t-transparent rounded-full animate-spin"></div>
-                <span className="ml-2">Loading...</span>
-              </div>
-            ) : (
-              "LOGIN"
-            )}
-          </button>
-        </form>
+            {/* LEVEL RADIO */}
+            <div className="flex gap-8 justify-center text-[#FFEAD7]">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  checked={formData.isjunior === true}
+                  onChange={() =>
+                    setFormData({ ...formData, isjunior: true })
+                  }
+                  className="hidden peer"
+                />
+                <span className="w-5 h-5 rounded-full border-2 border-[#CA915F] peer-checked:bg-[#CA915F] transition"></span>
+                Junior
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  checked={formData.isjunior === false}
+                  onChange={() =>
+                    setFormData({ ...formData, isjunior: false })
+                  }
+                  className="hidden peer"
+                />
+                <span className="w-5 h-5 rounded-full border-2 border-[#CA915F] peer-checked:bg-[#CA915F] transition"></span>
+                Senior
+              </label>
+            </div>
+
+            {/* SUBMIT BUTTON */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full mt-5 py-3 rounded-md font-bold border-2 border-[#CA915F] text-[#1B1A2F] bg-[#CA915F] transition-all hover:bg-[#FFEAD7] hover:text-[#0E0D40] ${loading ? "opacity-60 cursor-not-allowed" : ""
+                }`}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-5 h-5 border-4 border-[#CA915F] border-t-transparent rounded-md animate-spin"></div>
+                  Loading...
+                </div>
+              ) : (
+                "LOGIN"
+              )}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

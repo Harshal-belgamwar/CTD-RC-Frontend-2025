@@ -29,21 +29,19 @@ const CodeEditor = () => {
   const [output, setOutput] = useState("");
   const [submitResult, setSubmitResult] = useState(null);
   const [customInput, setCustomInput] = useState("");
-  
+
   const [machineInput, setMachineInput] = useState("");
   const [machineOutput, setMachineOutput] = useState(null);
 
-  // const [editorHeight, setEditorHeight] = useState("700px");
-
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-   const [isMachineRun, setIsMachineRun] = useState(false);
+  const [isMachineRun, setIsMachineRun] = useState(false);
 
   const [activeTab, setActiveTab] = useState("Description");
   const [question, setQuestion] = useState({});
   const [userSubmissions, setUserSubmissions] = useState([]);
 
-  const [lastInput,setLastInput] = useState("");
+  const [lastInput, setLastInput] = useState("");
 
   const leftColRef = useRef(null);
   const socketRef = useRef(null);
@@ -71,7 +69,7 @@ public class Main {
   };
 
   //Load save
-  useEffect(() => { 
+  useEffect(() => {
     if (!question?.id) return;
     const saved = localStorage.getItem(`code_q${question.id}_${language}`);
     // console.log(saved);
@@ -90,19 +88,7 @@ public class Main {
     return () => clearTimeout(timer);
   }, [code, question, language]);
 
-  // Adjust editor height
-  // useEffect(() => {
-  //   const updateHeight = () => {
-  //     if (leftColRef.current)
-  //       setEditorHeight(`${leftColRef.current.clientHeight}px`);
-  //   };
-  //   updateHeight();
-  //   window.addEventListener("resize", updateHeight);
-  //   return () => window.removeEventListener("resize", updateHeight);
-  // }, []);
-
   //fetch question
-
   useEffect(() => {
     if (!questionIndex) return;
     const fetchQuestion = async () => {
@@ -113,7 +99,7 @@ public class Main {
         );
         // console.log(res.data.id);
         setQuestion(res.data);
-        
+
       } catch (err) {
         toast.error("Something went wrong", {
           position: "top-center",
@@ -147,14 +133,12 @@ public class Main {
     };
   }, []);
 
-  
-
   // Run code
   const runCode = async () => {
     setIsRunning(true);
     setOutput(null);
     setSubmitResult(null);
-    
+
 
     const payload = {
       code: encodeBase64(code),
@@ -181,7 +165,7 @@ public class Main {
           setOutput(`${data.status} : ${data.message}`);
         }
         // Remove listener after receiving result
-      
+
         setIsRunning(false);
         socketRef.current.off("result", handleResult);
       };
@@ -203,9 +187,6 @@ public class Main {
     setOutput(null);
     setSubmitResult(null);
 
-    
- 
-
     try {
       const res = await axios.post(
         `${BACKEND_URL}/submission/submit`,
@@ -221,7 +202,7 @@ public class Main {
       // console.log(res.error);
 
       // Save submission_id to trigger useEffect
-      
+
 
       const handleResult = (data) => {
         // console.log(data);
@@ -257,9 +238,9 @@ public class Main {
       }
 
       toast.error("Something went wrong", {
-          position: "top-center",
-          autoClose: 2000,
-        });
+        position: "top-center",
+        autoClose: 2000,
+      });
     }
   };
 
@@ -282,7 +263,7 @@ public class Main {
           withCredentials: true,
         }
       );
-      
+
       // setActivationId(res.data.submission_id);
 
       const handleResult = (data) => {
@@ -296,8 +277,6 @@ public class Main {
 
         setIsMachineRun(false);
 
-        
-
         // Remove listener after handling result
         socketRef.current.off("result", handleResult);
       };
@@ -305,7 +284,7 @@ public class Main {
       // Subscribe to this submission
       socketRef.current.emit("subscribe", res.data.submission_id);
       socketRef.current.on("result", handleResult);
-      
+
     } catch (err) {
       setOutput("Error: " + (err.response?.data?.message || err.message));
     }
@@ -327,28 +306,28 @@ public class Main {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#191919] px-3">
+    <div className="flex flex-col w-full min-h-screen bg-gradient-to-br from-[#2a1f33] via-[#4b3140] to-[#9b6b5e] px-3">
       {/* Navbar */}
       <nav>
         <Navbar />
       </nav>
 
-      <div className="mt-5 flex justify-end w-[80vw] ml-[17vw] p-4 ">
-        <Timer/>
+      <div className="mt-5 flex justify-end w-[80vw] ml-[17vw] p-4">
+        <Timer />
       </div>
 
       {/* Tabs & Language Selector */}
       <div className="w-full text-white mt-5 flex justify-end pr-[1.5%]">
-        <div className="w-1/2 text-white mt-10 flex flex-row justify-start gap-4 p-4  rounded-2xl shadow-md bg-[#1A1A1A]">
+        <div className="w-1/2 text-white mt-10 flex flex-row justify-start gap-4 p-4 rounded-2xl shadow-md bg-[#1a1625]/90 backdrop-blur-sm border border-[#c29673] ml-3">
           {["Description", "SampleCase", "Submissions"].map((tab) => (
             <div
               key={tab}
               className={`cursor-pointer px-3 py-1 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200
-                          ${
-                            activeTab === tab
-                              ? "bg-[#CAFF33] text-black shadow-lg"
-                              : "text-white hover:text-[#CAFF33]"
-                          }`}
+                ${activeTab === tab
+                  ? "bg-gradient-to-r from-[#FFE7A3] to-[#B8832F] text-[#0E0D40] shadow-lg border border-[#FFE7A3]"
+                  : "text-[#f3e3bf] hover:text-[#FFE7A3]"
+                }`}
+              style={{ fontFamily: activeTab === tab ? "Cinzel, serif" : "" }}
               onClick={() => {
                 setActiveTab(tab);
                 if (tab === "Submissions") fetchSubmissions();
@@ -359,18 +338,28 @@ public class Main {
           ))}
         </div>
 
-        <div className="w-1/2 flex justify-end items-center gap-3 px-4 mt-10  rounded-2xl shadow-md bg-[#1A1A1A]">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="bg-[#CAFF33] text-black font-semibold rounded-full px-4 py-2 shadow-md hover:scale-105 transition-transform duration-200"
-          >
-            {languages.map((lang) => (
-              <option key={lang} value={lang}>
-                {lang.toUpperCase()}
-              </option>
-            ))}
-          </select>
+        <div className="w-1/2 flex justify-end items-center gap-3 px-4 mt-10">
+          <div className="relative">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="bg-gradient-to-r from-[#FFE7A3] to-[#E6B65C] text-[#0E0D40] font-semibold rounded-full px-6 py-2.5 shadow-[0_4px_0_#0D1026] border-2 border-[#FFE7A3] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 cursor-pointer appearance-none pr-10"
+              style={{ fontFamily: "Cinzel, serif" }}
+            >
+              {languages.map((lang) => (
+                <option key={lang} value={lang} className="bg-[#1a1625] text-[#FFE7A3]">
+                  {lang.toUpperCase()}
+                </option>
+              ))}
+            </select>
+
+            {/* Custom dropdown arrow */}
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#0E0D40]">
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -380,9 +369,9 @@ public class Main {
         ref={leftColRef}
       >
         {/* Left Column: Question / Samples / Submissions */}
-        <div className="w-full flex flex-col lg:w-1/2  gap-4 overflow-y-auto rounded-lg shadow-xl bg-gradient-to-b from-[#1C1C1C] to-[#2A2A2A] p-4">
+        <div className="w-full flex flex-col lg:w-1/2 gap-4 overflow-y-auto rounded-lg shadow-xl bg-gradient-to-b from-[#1a1625] to-[#231f2f] p-4 border border-[#c29673]">
           {/* Question / Samples / Submissions */}
-          <div className="border-2 border-[#CAFF33] p-4 rounded-lg bg-[#1B1B1B] shadow-inner">
+          <div className=" p-4 rounded-lg bg-[#1a1625]/90 shadow-inner">
             {activeTab === "Description" && (
               <Description
                 Question={question || { title: "", description: "", points: 0 }}
@@ -397,17 +386,17 @@ public class Main {
           </div>
 
           {/* Test Case Section */}
-          <div className="flex flex-col border-2 border-[#CAFF33] rounded-lg p-4 bg-[#222222] shadow-md text-white gap-3">
-            <div className="text-lg font-semibold text-[#CAFF33]">
+          <div className="flex flex-col border-2 border-[#c29673] rounded-lg p-4 bg-[#1a1625]/90 shadow-md text-white gap-3">
+            <div className="text-lg font-semibold text-[#FFE7A3]" style={{ fontFamily: "Cinzel, serif" }}>
               Test Case
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Input Box */}
               <div className="flex flex-col">
-                <label className="text-sm text-gray-400 mb-1">Input</label>
+                <label className="text-sm text-[#e6d4b3] mb-1">Input</label>
                 <textarea
-                  className="bg-[#1C1C1C] border border-[#555] rounded-md p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#CAFF33] resize-none"
+                  className="bg-[#231f2f] border border-[#c29673] rounded-md p-3 text-white placeholder-[#e6d4b3]/50 focus:outline-none focus:ring-2 focus:ring-[#FFE7A3] focus:border-[#FFE7A3] resize-none"
                   rows={5}
                   value={machineInput}
                   onChange={(e) => setMachineInput(e.target.value)}
@@ -417,20 +406,20 @@ public class Main {
 
               {/* Output Display Box */}
               <div className="flex flex-col">
-                <label className="text-sm text-gray-400 mb-1">
+                <label className="text-sm text-[#e6d4b3] mb-1">
                   Expected Output
                 </label>
-                <div className="bg-[#1C1C1C] border border-[#555] rounded-md p-3 text-white h-[120px] overflow-auto">
-                  {/* Dynamically display output here */}
+                <div className="bg-[#231f2f] border border-[#c29673] rounded-md p-3 text-white h-[120px] overflow-auto">
                   {machineOutput}
                 </div>
               </div>
             </div>
 
             <button
-              disabled={isMachineRun  || lastInput === machineInput || machineInput === ""}
-              className="mt-3 bg-[#CAFF33] text-black font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-[#292929] border-2 border-[#CAFF33] hover:text-[#CAFF33] transition-all duration-200 disabled:bg-[#7D9900] disabled:cursor-not-allowed disabled:opacity-70"
+              disabled={isMachineRun || lastInput === machineInput || machineInput === ""}
+              className="mt-3 bg-gradient-to-r from-[#FFE7A3] to-[#B8832F] text-[#0E0D40] font-semibold py-2 px-4 rounded-lg shadow-[0_4px_0_#0D1026] border-2 border-[#FFE7A3] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 disabled:from-[#6b5d4a] disabled:to-[#4a4135] disabled:text-[#e6d4b3]/50 disabled:border-[#6b5d4a] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_0_#0D1026]"
               onClick={machineRun}
+              style={{ fontFamily: "Cinzel, serif" }}
             >
               Machine Run
             </button>
@@ -439,16 +428,16 @@ public class Main {
 
         {/* Right Column: Code Editor + Custom Test Case / Submission Results */}
         <div
-          className="w-full lg:w-1/2 flex flex-col  rounded-lg shadow-md bg-[#1C1C1C] p-3  "
-          style={{ height: "700px"}}
+          className="w-full lg:w-1/2 flex flex-col rounded-lg shadow-md bg-[#1a1625]/90  p-3"
+          style={{ height: "700px" }}
         >
           {/* Editor */}
-          <div className="flex-1 border border-[#CAFF33]">
+          <div className="flex-1 border border-[#c29673] rounded-t-lg overflow-hidden">
             <Editor
               height="100%"
               language={language}
               value={code}
-              onChange={(value) => setCode(value )}
+              onChange={(value) => setCode(value)}
               options={{
                 fontSize: 15,
                 fontFamily: "Fira Code, monospace",
@@ -477,11 +466,11 @@ public class Main {
                     { token: "function", foreground: "F1FA8C" },
                   ],
                   colors: {
-                    "editor.background": "#1C1C1C",
+                    "editor.background": "#1a1625",
                     "editor.foreground": "#E0E0E0",
-                    "editorCursor.foreground": "#FF4136",
-                    "editor.lineHighlightBackground": "#2A2A2A",
-                    "editorLineNumber.foreground": "#7FDBFF",
+                    "editorCursor.foreground": "#FFE7A3",
+                    "editor.lineHighlightBackground": "#231f2f",
+                    "editorLineNumber.foreground": "#c29673",
                     "editor.selectionBackground": "#44475A",
                     "editorIndentGuide.background": "#44475A",
                     "editorIndentGuide.activeBackground": "#6272A4",
@@ -498,52 +487,50 @@ public class Main {
           </div>
 
           {/* Custom Test Case / Submission Results */}
-          <div className="flex flex-col gap-4  mt-3">
+          <div className="flex flex-col gap-4 mt-3">
             {submitResult ? (
-              <div className="p-4 border border-[#CAFF33] rounded-md bg-[#1C1C1C]/30 text-white">
-                <p className="font-bold mb-2">
+              <div className="p-4 border border-[#c29673] rounded-md bg-[#1a1625]/90 text-white">
+                <p className="font-bold mb-2" style={{ fontFamily: "Cinzel, serif" }}>
                   Status:{" "}
                   <span
                     className={
                       submitResult.status?.toLowerCase() === "accepted"
-                        ? "text-green-500"
-                        : "text-red-500"
+                        ? "text-[#FFE7A3]"
+                        : "text-[#ff6b6b]"
                     }
                   >
                     {submitResult.status}
                   </span>{" "}
                   | Score: {submitResult.score ?? 0}
                 </p>
-                <p className="mb-3">
+                <p className="mb-3 text-[#e6d4b3]">
                   {submitResult.failed_test_case === 0
-                    ? ` ${submitResult.total_test_case}/${
-                        submitResult.total_test_case
-                      } test cases passed`
-                    : `${submitResult.failed_test_case - 1} / ${
-                        submitResult.total_test_case
-                      } test cases passed`}
+                    ? ` ${submitResult.total_test_case}/${submitResult.total_test_case
+                    } test cases passed`
+                    : `${submitResult.failed_test_case - 1} / ${submitResult.total_test_case
+                    } test cases passed`}
                 </p>
                 <div className="space-y-2">
                   {Array.from({ length: submitResult.total_test_case }).map(
                     (_, idx) => {
-                      let statusClass = "text-white";
+                      let statusClass = "text-[#e6d4b3]";
                       let text = `Test Case ${idx + 1}`;
 
                       if (
                         submitResult.failed_test_case === 0 ||
                         idx + 1 < submitResult.failed_test_case
                       ) {
-                        statusClass = "text-green-400";
+                        statusClass = "text-[#FFE7A3]";
                         text += ": PASSED";
                       } else if (idx + 1 === submitResult.failed_test_case) {
-                        statusClass = "text-red-500";
+                        statusClass = "text-[#ff6b6b]";
                         text += ": FAILED";
                       }
 
                       return (
                         <div
                           key={idx + 1}
-                          className="p-2 border border-[#CAFF33] rounded-md"
+                          className="p-2 border border-[#c29673] rounded-md bg-[#231f2f]"
                         >
                           <p className={statusClass}>{text}</p>
                         </div>
@@ -558,39 +545,38 @@ public class Main {
                   value={customInput}
                   onChange={(e) => setCustomInput(e.target.value)}
                   placeholder="Enter custom input..."
-                  className="w-full h-[150px] p-3 bg-[#1C1C1C]/40 text-white rounded-lg resize-none focus:outline-none border border-[#CAFF33]"
+                  className="w-full h-[150px] p-3 bg-[#231f2f] text-white rounded-lg resize-none focus:outline-none border border-[#c29673] focus:border-[#FFE7A3] focus:ring-2 focus:ring-[#FFE7A3]/30 placeholder-[#e6d4b3]/50"
                 />
 
-                <div className="w-full h-[150px] text-white orbitron text-sm sm:text-base md:text-lg p-4 overflow-y-auto bg-[#1C1C1C]/40 rounded-lg border border-[#CAFF33]">
-                  <div>Output:</div>
-                  <pre>{output ?? ""}</pre>
+                <div className="w-full h-[150px] text-[#e6d4b3] text-sm sm:text-base md:text-lg p-4 overflow-y-auto bg-[#231f2f] rounded-lg border border-[#c29673]">
+                  <div className="text-[#FFE7A3] font-semibold mb-2" style={{ fontFamily: "Cinzel, serif" }}>Output:</div>
+                  <pre className="text-white">{output ?? ""}</pre>
                 </div>
               </div>
             )}
           </div>
+
           {/* Run & Submit buttons */}
-          <div className="mt-10 flex gap-3 justify-end text-black font-bold text-xl">
+          <div className="mt-4 flex gap-3 justify-end text-black font-bold text-xl">
             <button
               onClick={runCode}
-              disabled={isRunning }
-              className="w-[150px] h-[50px] bg-[#CAFF33] disabled:bg-[#7D9900] disabled:cursor-not-allowed border-2 border-[#CAFF33] rounded-md hover:bg-[#292929] hover:text-[#CAFF33] transition-colors shadow-md"
+              disabled={isRunning}
+              className="w-[150px] h-[50px] bg-gradient-to-r from-[#FFE7A3] to-[#E6B65C] text-[#0E0D40] font-bold border-2 border-[#FFE7A3] rounded-md shadow-[0_4px_0_#0D1026] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 disabled:from-[#6b5d4a] disabled:to-[#4a4135] disabled:text-[#e6d4b3]/50 disabled:border-[#6b5d4a] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_0_#0D1026]"
+              style={{ fontFamily: "Cinzel, serif" }}
             >
               Run
             </button>
             <button
               onClick={submitCode}
               disabled={isSubmitting}
-              className="w-[150px] h-[50px] border-2 rounded-md shadow-md flex items-center justify-center text-black font-bold transition-colors
-      bg-[#CAFF33] border-[#CAFF33] hover:bg-[#292929] hover:text-[#CAFF33]
-      disabled:bg-[#7D9900] disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-[150px] h-[50px] bg-gradient-to-r from-[#FFE7A3] to-[#E6B65C] text-[#0E0D40] font-bold border-2 border-[#FFE7A3] rounded-md shadow-[0_4px_0_#0D1026] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 disabled:from-[#6b5d4a] disabled:to-[#4a4135] disabled:text-[#e6d4b3]/50 disabled:border-[#6b5d4a] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_0_#0D1026]"
+              style={{ fontFamily: "Cinzel, serif" }}
             >
               Submit
             </button>
           </div>
         </div>
       </div>
-
-      
     </div>
   );
 };

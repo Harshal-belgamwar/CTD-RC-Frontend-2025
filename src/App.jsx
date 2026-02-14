@@ -14,16 +14,16 @@ import PublicRoutes from "./ProtectedRoutes/PublicRoutes";
 
 function App() {
 
-   const location = useLocation();
+  const location = useLocation();
 
   // Pages where FullscreenMonitor should NOT appear
   const excludedPages = ["/", "/instructions"];
   const showFullscreenMonitor = !excludedPages.includes(location.pathname);
   const switchTab = !excludedPages.includes(location.pathname);
 
-  
+
   useEffect(() => {
-    
+
     //  Disable right-click and text selection
     const disable = (e) => e.preventDefault();
     document.addEventListener("contextmenu", disable);
@@ -39,31 +39,31 @@ function App() {
       if (e.ctrlKey && e.shiftKey && ["I", "J"].includes(e.key)) e.preventDefault();
       if (
         (e.ctrlKey && ["c", "v", "x", "u"].includes(e.key.toLowerCase())) ||
-        e.key === "F12" 
+        e.key === "F12"
       ) {
         e.preventDefault();
-        toast.warn("⚠ Actions like Copy/Paste are disabled!",{autoClose: 3000});
+        toast.warn("⚠ Actions like Copy/Paste are disabled!", { autoClose: 3000 });
       }
 
       if (e.shiftKey && e.key === "Insert") {
-    e.preventDefault();
-    toast.warn("⚠ Paste using Shift+Insert is disabled!", { autoClose: 3000 });
-  }
-      
+        e.preventDefault();
+        toast.warn("⚠ Paste using Shift+Insert is disabled!", { autoClose: 3000 });
+      }
+
     };
     document.addEventListener("keydown", blockKeys);
 
     // Detect tab switching
     const handleVisibility = () => {
       if (document.hidden && switchTab) {
-        toast.error("⚠ Tab switching is not allowed!",{autoClose: 3000});
+        toast.error("⚠ Tab switching is not allowed!", { autoClose: 3000 });
         // Optional: you could add logic here to end the test or log the event
       }
     };
 
-     document.addEventListener("visibilitychange", handleVisibility);
-  
-  
+    document.addEventListener("visibilitychange", handleVisibility);
+
+
 
     return () => {
       document.removeEventListener("contextmenu", disable);
@@ -87,24 +87,29 @@ function App() {
         closeOnClick
         pauseOnHover
         draggable
-        
+
       />
 
       {showFullscreenMonitor && <FullscreenMonitor />}
 
       <Routes>
-        <Route element={<PublicRoutes/>}>
-        <Route path="/" element={<Login />} />
+        <Route element={<PublicRoutes />}>
+          <Route path="/" element={<Login />} />
+          {/* <Route path="/instructions" element={<Instructions />} />
+          <Route path="/questionhub" element={<QuestionHub />} />
+          <Route path="/codeeditor" element={<CodeEditor />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/results" element={<Results />} /> */}
 
         </Route>
 
 
-        <Route element={<ProtectedRoutes/>}>
-        <Route path="/instructions" element={<Instructions />} />
-        <Route path="/questionhub" element={<QuestionHub />} />
-        <Route path="/codeeditor" element={<CodeEditor />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/results" element={<Results />} />
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/instructions" element={<Instructions />} />
+          <Route path="/questionhub" element={<QuestionHub />} />
+          <Route path="/codeeditor" element={<CodeEditor />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/results" element={<Results />} />
         </Route>
       </Routes>
       {/* <Login /> */}

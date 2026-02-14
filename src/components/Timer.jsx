@@ -22,8 +22,6 @@ function EventTimer() {
     if (remainingMs === null) return;
 
     if (remainingMs <= 0) {
-    
-
       navigate("/results");
     }
 
@@ -33,16 +31,15 @@ function EventTimer() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [remainingMs]);
+  }, [remainingMs, navigate]);
 
   // Formatter (same as backend’s formatRemainingTime)
   const formatRemainingTime = (ms) => {
     if (ms <= 0) return "Event Ended";
 
     const seconds = Math.floor(ms / 1000) % 60;
-    const minutes = Math.floor(ms / (1000 * 60))%60;
+    const minutes = Math.floor(ms / (1000 * 60)) % 60;
     const hours = Math.floor(ms / (1000 * 60 * 60)) % 24;
-    // const days = Math.floor(ms / (1000 * 60 * 60 * 24));
 
     return ` ${hours} : ${minutes} : ${seconds}`;
   };
@@ -50,8 +47,8 @@ function EventTimer() {
   if (remainingMs === null) return <p>Loading...</p>;
 
   return (
-    <div className="bg-[#CAFF33] text-black font-semibold rounded-full px-4 py-2 shadow-md hover:scale-105 transition-transform duration-200">
-      <p>{formatRemainingTime(remainingMs)}</p>
+    <div className="bg-gradient-to-r from-[#FFE7A3] to-[#B8832F] text-[#0E0D40] font-semibold rounded-full px-4 py-2 shadow-[0_4px_0_#0D1026] border-2 border-[#FFE7A3] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300">
+      <p className="font-bold tracking-wide">{formatRemainingTime(remainingMs)}</p>
     </div>
   );
 }
