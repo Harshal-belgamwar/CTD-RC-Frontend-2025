@@ -114,11 +114,11 @@ const Instructions = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#3A2A3F] via-[#6B4A55] to-[#9E6A6A] tracking-wide">
       <Navbar />
-      <div className="flex flex-col mt-[5%] items-center justify-center space-y-15 px-4 sm:px-6 lg:px-8 py-5">
+      <div className="flex flex-col items-center justify-center space-y-15 px-4 sm:px-6 lg:px-8 py-5">
         {/* Enhanced Title with your theme */}
         <h1
           className="
-      text-4xl sm:text-5xl lg:text-6xl 
+      text-4xl sm:text-5xl lg:text-6xl font-stranger
       font-extrabold 
       py-4 
       text-transparent 
@@ -129,7 +129,7 @@ const Instructions = () => {
       relative
       group 
     "
-          style={{ fontFamily: "Cinzel, serif" }}
+
         >
           INSTRUCTIONS
 
@@ -216,20 +216,10 @@ const Instructions = () => {
       " />
 
             {/* Icon */}
-            <svg
-              className="
-          w-5 h-5 sm:w-6 sm:h-6
-          fill-current text-[#0E0D40]
-          transform group-hover/proceed:translate-x-1
-          transition-transform duration-300
-        "
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
-            </svg>
+
 
             <span className="relative z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
-              PROCEED TO HUB
+              PROCEED
             </span>
 
             {/* Corner accents */}

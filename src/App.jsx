@@ -17,64 +17,64 @@ function App() {
   const location = useLocation();
 
   // Pages where FullscreenMonitor should NOT appear
-  const excludedPages = ["/", "/instructions"];
-  const showFullscreenMonitor = !excludedPages.includes(location.pathname);
-  const switchTab = !excludedPages.includes(location.pathname);
+  // const excludedPages = ["/", "/instructions"];
+  // const showFullscreenMonitor = !excludedPages.includes(location.pathname);
+  // const switchTab = !excludedPages.includes(location.pathname);
 
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    //  Disable right-click and text selection
-    const disable = (e) => e.preventDefault();
-    document.addEventListener("contextmenu", disable);
-    document.addEventListener("selectstart", disable);
+  //   //  Disable right-click and text selection
+  //   const disable = (e) => e.preventDefault();
+  //   document.addEventListener("contextmenu", disable);
+  //   document.addEventListener("selectstart", disable);
 
-    // Disable clipboard actions
-    document.addEventListener("copy", disable);
-    document.addEventListener("cut", disable);
-    document.addEventListener("paste", disable);
+  //   // Disable clipboard actions
+  //   document.addEventListener("copy", disable);
+  //   document.addEventListener("cut", disable);
+  //   document.addEventListener("paste", disable);
 
-    //  Disable keyboard shortcuts (Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+U, F12)
-    const blockKeys = (e) => {
-      if (e.ctrlKey && e.shiftKey && ["I", "J"].includes(e.key)) e.preventDefault();
-      if (
-        (e.ctrlKey && ["c", "v", "x", "u"].includes(e.key.toLowerCase())) ||
-        e.key === "F12"
-      ) {
-        e.preventDefault();
-        toast.warn("⚠ Actions like Copy/Paste are disabled!", { autoClose: 3000 });
-      }
+  //   //  Disable keyboard shortcuts (Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+U, F12)
+  //   const blockKeys = (e) => {
+  //     if (e.ctrlKey && e.shiftKey && ["I", "J"].includes(e.key)) e.preventDefault();
+  //     if (
+  //       (e.ctrlKey && ["c", "v", "x", "u"].includes(e.key.toLowerCase())) ||
+  //       e.key === "F12"
+  //     ) {
+  //       e.preventDefault();
+  //       toast.warn("⚠ Actions like Copy/Paste are disabled!", { autoClose: 3000 });
+  //     }
 
-      if (e.shiftKey && e.key === "Insert") {
-        e.preventDefault();
-        toast.warn("⚠ Paste using Shift+Insert is disabled!", { autoClose: 3000 });
-      }
+  //     if (e.shiftKey && e.key === "Insert") {
+  //       e.preventDefault();
+  //       toast.warn("⚠ Paste using Shift+Insert is disabled!", { autoClose: 3000 });
+  //     }
 
-    };
-    document.addEventListener("keydown", blockKeys);
+  //   };
+  //   document.addEventListener("keydown", blockKeys);
 
-    // Detect tab switching
-    const handleVisibility = () => {
-      if (document.hidden && switchTab) {
-        toast.error("⚠ Tab switching is not allowed!", { autoClose: 3000 });
-        // Optional: you could add logic here to end the test or log the event
-      }
-    };
+  //   // Detect tab switching
+  //   const handleVisibility = () => {
+  //     if (document.hidden && switchTab) {
+  //       toast.error("⚠ Tab switching is not allowed!", { autoClose: 3000 });
+  //       // Optional: you could add logic here to end the test or log the event
+  //     }
+  //   };
 
-    document.addEventListener("visibilitychange", handleVisibility);
+  //   document.addEventListener("visibilitychange", handleVisibility);
 
 
 
-    return () => {
-      document.removeEventListener("contextmenu", disable);
-      document.removeEventListener("selectstart", disable);
-      document.removeEventListener("copy", disable);
-      document.removeEventListener("cut", disable);
-      document.removeEventListener("paste", disable);
-      document.removeEventListener("keydown", blockKeys);
-      document.removeEventListener("visibilitychange", handleVisibility);
-    };
-  }, []);
+  //   return () => {
+  //     document.removeEventListener("contextmenu", disable);
+  //     document.removeEventListener("selectstart", disable);
+  //     document.removeEventListener("copy", disable);
+  //     document.removeEventListener("cut", disable);
+  //     document.removeEventListener("paste", disable);
+  //     document.removeEventListener("keydown", blockKeys);
+  //     document.removeEventListener("visibilitychange", handleVisibility);
+  //   };
+  // }, []);
 
 
   return (
@@ -90,26 +90,26 @@ function App() {
 
       />
 
-      {showFullscreenMonitor && <FullscreenMonitor />}
+      {/* {showFullscreenMonitor && <FullscreenMonitor />} */}
 
       <Routes>
         <Route element={<PublicRoutes />}>
           <Route path="/" element={<Login />} />
-          {/* <Route path="/instructions" element={<Instructions />} />
-          <Route path="/questionhub" element={<QuestionHub />} />
-          <Route path="/codeeditor" element={<CodeEditor />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/results" element={<Results />} /> */}
-
-        </Route>
-
-
-        <Route element={<ProtectedRoutes />}>
           <Route path="/instructions" element={<Instructions />} />
           <Route path="/questionhub" element={<QuestionHub />} />
           <Route path="/codeeditor" element={<CodeEditor />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/results" element={<Results />} />
+
+        </Route>
+
+
+        <Route element={<ProtectedRoutes />}>
+          {/* <Route path="/instructions" element={<Instructions />} />
+          <Route path="/questionhub" element={<QuestionHub />} />
+          <Route path="/codeeditor" element={<CodeEditor />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/results" element={<Results />} /> */}
         </Route>
       </Routes>
       {/* <Login /> */}

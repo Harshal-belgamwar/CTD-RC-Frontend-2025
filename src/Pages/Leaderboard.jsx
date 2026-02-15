@@ -17,9 +17,7 @@ const fetchStudents = async () => {
 
     // Transform backend response into frontend format
     return response.data.map((item) => ({
-      username: item.username2
-        ? `${item.username1} & ${item.username2}`
-        : item.username1,
+      username: item.teamname,
       scores: [item.problem_1, item.problem_2, item.problem_3, item.problem_4],
       total: item.total_score,
       time: new Date(item.last_submission_time).toLocaleTimeString(),
@@ -93,6 +91,7 @@ function Leaderboard() {
         <h1
           className="
             text-4xl md:text-5xl lg:text-[50px] 
+            font-stranger
             font-extrabold 
             tracking-widest
             bg-gradient-to-b from-[#FFE7A3] via-[#E6B65C] to-[#B8832F]
@@ -139,8 +138,8 @@ function Leaderboard() {
               <thead className="text-base md:text-lg font-bold">
                 <tr className="border-b-2 border-[#c29673]">
                   <th className="py-5 w-[10%] relative">
-                    <span className="flex items-center justify-center gap-2">
-                      <FaTrophy className="text-[#FFE7A3]" />
+                    <span className="flex items-center justify-center gap-2 font-play">
+
                       RANK
                     </span>
                   </th>
@@ -193,27 +192,21 @@ function Leaderboard() {
                             {rank}
                           </span>
                         </div>
-                        {isTop3 && (
-                          <GiLaurelCrown className="absolute -top-1 -right-2 w-4 h-4 text-[#FFE7A3]/30" />
-                        )}
+
                       </td>
 
                       {/* Username with special styling for top performers */}
                       <td className="font-bold">
                         <span className={`
                           ${isTop3 ? 'text-[#FFE7A3]' : 'text-white'}
-                          uppercase tracking-wider
+                           tracking-wider
                           relative
                           inline-block
                           group-hover:scale-105
                           transition-transform duration-300
                         `}>
                           {student.username}
-                          {isTop3 && (
-                            <span className="absolute -top-1 -right-4 text-xs">
-                              {rank === 1 && '👑'}
-                            </span>
-                          )}
+
                         </span>
                       </td>
 

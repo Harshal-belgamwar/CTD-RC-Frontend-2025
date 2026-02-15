@@ -52,14 +52,14 @@ function Results() {
           className="
             text-5xl md:text-6xl lg:text-7xl
             font-extrabold 
-           
+            font-stranger
             bg-gradient-to-b from-[#FFE7A3] via-[#E6B65C] to-[#B8832F]
             bg-clip-text text-transparent
             [-webkit-text-stroke:1px_#1B1F4A]
             drop-shadow-[4px_4px_0_#0D1026]
             inline-block
           "
-          style={{ fontFamily: "Cinzel, serif" }}
+
         >
           RESULT
         </h1>
@@ -85,17 +85,18 @@ function Results() {
               drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]
               hover:text-white
               transition-colors duration-300
+              font-play
             "
-            style={{ fontFamily: "Cinzel, serif" }}
+
           >
-            {`${result.username1} ${result.username2 ? `& ${result.username2}` : ""}`}
+            {`${result.teamname}`}
           </div>
 
           {/* Junior/Senior Badge with hover effect */}
           <div className="w-[180px] md:w-[200px] h-[45px] md:h-[50px] rounded-[30px] bg-gradient-to-r from-[#E6B65C] to-[#B8832F] flex justify-center items-center border-2 border-[#FFE7A3] hover:from-[#FFE7A3] hover:to-[#E6B65C] hover:scale-105 transition-all duration-300">
             <span
-              className="font-bold text-xl md:text-2xl text-[#0E0D40]"
-              style={{ fontFamily: "Cinzel, serif" }}
+              className="font-bold text-xl md:text-2xl text-[#0E0D40] font-play"
+
             >
               {result.isjunior ? "JUNIOR" : "SENIOR"}
             </span>
@@ -107,14 +108,14 @@ function Results() {
           {/* Rank Card */}
           <div className="w-full max-w-[280px] h-[180px] md:h-[200px] rounded-[20px] border-2 border-[#c29673] bg-[#1a1625]/90 overflow-hidden hover:scale-105 hover:border-[#FFE7A3] hover:shadow-[0_0_20px_rgba(202,150,115,0.3)] transition-all duration-300">
             <div className="w-full h-[60%] bg-gradient-to-br from-[#E6B65C] to-[#B8832F] flex items-center justify-center">
-              <div className="font-bold text-5xl md:text-6xl text-center text-[#0E0D40]">
+              <div className="font-bold text-5xl md:text-6xl text-center text-[#0E0D40] font-play">
                 {result.rank || "-"}
               </div>
             </div>
             <div className="w-full h-[40%] flex items-center justify-center">
               <span
-                className="font-bold text-xl md:text-2xl text-[#FFE7A3]"
-                style={{ fontFamily: "Cinzel, serif" }}
+                className="font-bold text-xl md:text-2xl text-[#FFE7A3] font-play"
+
               >
                 RANK
               </span>
@@ -124,14 +125,14 @@ function Results() {
           {/* Score Card */}
           <div className="w-full max-w-[280px] h-[180px] md:h-[200px] rounded-[20px] border-2 border-[#c29673] bg-[#1a1625]/90 overflow-hidden hover:scale-105 hover:border-[#FFE7A3] hover:shadow-[0_0_20px_rgba(202,150,115,0.3)] transition-all duration-300">
             <div className="w-full h-[60%] bg-gradient-to-br from-[#E6B65C] to-[#B8832F] flex items-center justify-center">
-              <div className="font-bold text-5xl md:text-6xl text-center text-[#0E0D40]">
+              <div className="font-bold text-5xl md:text-6xl text-center text-[#0E0D40] font-play">
                 {result.total_score || "-"}
               </div>
             </div>
             <div className="w-full h-[40%] flex items-center justify-center">
               <span
-                className="font-bold text-xl md:text-2xl text-[#FFE7A3]"
-                style={{ fontFamily: "Cinzel, serif" }}
+                className="font-bold text-xl md:text-2xl text-[#FFE7A3] font-play"
+
               >
                 SCORE
               </span>
@@ -147,8 +148,8 @@ function Results() {
             </div>
             <div className="w-full h-[40%] flex items-center justify-center">
               <span
-                className="font-bold text-lg md:text-xl text-[#FFE7A3] text-center leading-tight"
-                style={{ fontFamily: "Cinzel, serif" }}
+                className="font-bold text-lg md:text-xl text-[#FFE7A3] text-center leading-tight font-play"
+
               >
                 TOTAL
                 <br />
@@ -160,14 +161,14 @@ function Results() {
           {/* Accuracy Card */}
           <div className="w-full max-w-[280px] h-[180px] md:h-[200px] rounded-[20px] border-2 border-[#c29673] bg-[#1a1625]/90 overflow-hidden hover:scale-105 hover:border-[#FFE7A3] hover:shadow-[0_0_20px_rgba(202,150,115,0.3)] transition-all duration-300">
             <div className="w-full h-[60%] bg-gradient-to-br from-[#E6B65C] to-[#B8832F] flex items-center justify-center">
-              <div className="font-bold text-5xl md:text-6xl text-center text-[#0E0D40]">
+              <div className="font-bold text-5xl md:text-6xl text-center text-[#0E0D40] font-play">
                 {formattedAccuracy}
               </div>
             </div>
             <div className="w-full h-[40%] flex items-center justify-center">
               <span
-                className="font-bold text-xl md:text-2xl text-[#FFE7A3]"
-                style={{ fontFamily: "Cinzel, serif" }}
+                className="font-bold text-xl md:text-2xl text-[#FFE7A3] font-play"
+
               >
                 ACCURACY
               </span>

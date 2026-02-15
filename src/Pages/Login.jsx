@@ -12,6 +12,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    teamname: "",
     event_id: 2,
     isjunior: false,
     isVerified: false,
@@ -29,6 +30,7 @@ const Login = () => {
         {
           username: formData.username.trim(),
           password: formData.password.trim(),
+          teamname: formData.teamname.trim(),
           event_id: formData.event_id,
           isjunior: formData.isjunior,
           isVerified: formData.isVerified,
@@ -89,21 +91,35 @@ const Login = () => {
 
       {/* RC LOGO */}
       <div className="absolute top-6 left-6 z-20">
-        <img src={rc_image} className="h-[90px]" alt="RC Logo" />
+        <img src={rc_image} className="h-[50px]" alt="RC Logo" />
       </div>
 
       {/* FORM CONTAINER */}
       <div className="relative z-20 min-h-screen flex items-center justify-center">
         <div className="w-full max-w-md p-10 rounded-2xl  bg-transparent flex flex-col gap-20 ">
           <div className="flex justify-center items-center">
-            <img src={login_image} alt="" className="lg:h-[12vh] h-[10vh] " />
+            <h1
+              className="
+            font-stranger
+            bg-gradient-to-b from-[#FFE7A3] via-[#E6B65C] to-[#B8832F]
+            bg-clip-text text-transparent
+            [-webkit-text-stroke:1px_#1B1F4A]
+            drop-shadow-[4px_4px_0_#0D1026]
+            [text-shadow:0_0_30px_rgba(230,182,92,0.5)]
+            text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-8xl
+            
+            px-4
+          "
+            >
+              LOGIN
+            </h1>
           </div>
 
 
           <form className="space-y-7 w-full" onSubmit={handleSubmit}>
             {/* USERNAME */}
             <div>
-              <label className="block text-[#FFEAD7] text-xl font-medium mb-2 font-play ml-1">
+              <label className="w-full sm:w-[90%] md:w-[80%] text-base sm:text-lg tracking-wide text-[#FFE7A3] font-play">
                 USERNAME
               </label>
               <input
@@ -120,7 +136,7 @@ const Login = () => {
 
             {/* PASSWORD */}
             <div>
-              <label className="block text-[#FFEAD7] text-xl font-medium mb-2 font-play ml-1">
+              <label className="w-full sm:w-[90%] md:w-[80%] text-base sm:text-lg tracking-wide text-[#FFE7A3] font-play">
                 PASSWORD
               </label>
               <input
@@ -135,9 +151,26 @@ const Login = () => {
               />
             </div>
 
+            {/* Team name */}
+            <div>
+              <label className="w-full sm:w-[90%] md:w-[80%] text-base sm:text-lg tracking-wide text-[#FFE7A3] font-play">
+                Team Name
+              </label>
+              <input
+                type="text"
+                value={formData.teamname}
+                onChange={(e) =>
+                  setFormData({ ...formData, teamname: e.target.value })
+                }
+                required
+                placeholder="Enter team name"
+                className="w-full px-4 py-3 bg-[#0E0D40] border-2 border-[#CA915F] text-[#FFEAD7] rounded-md focus:outline-none focus:ring-2 focus:ring-[#CA915F] placeholder:text-[#FFEAD7]/60"
+              />
+            </div>
+
             {/* LEVEL RADIO */}
-            <div className="flex gap-8 justify-center text-[#FFEAD7]">
-              <label className="flex items-center gap-2 cursor-pointer">
+            <div className="flex gap-10 justify-center text-[#FFEAD7]">
+              <label className="flex items-center gap-2 cursor-pointer font-play">
                 <input
                   type="radio"
                   checked={formData.isjunior === true}
@@ -150,7 +183,7 @@ const Login = () => {
                 Junior
               </label>
 
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer font-play">
                 <input
                   type="radio"
                   checked={formData.isjunior === false}
@@ -172,12 +205,14 @@ const Login = () => {
                 }`}
             >
               {loading ? (
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex items-center justify-center gap-2 ">
                   <div className="w-5 h-5 border-4 border-[#CA915F] border-t-transparent rounded-md animate-spin"></div>
                   Loading...
                 </div>
               ) : (
-                "LOGIN"
+                <div className="font-play text-xl">
+                  LOGIN
+                </div>
               )}
             </button>
           </form>
