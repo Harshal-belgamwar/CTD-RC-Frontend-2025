@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import Navbar from "../components/Navbar";
 import alien from "../assets/alien.png";
 import { toast } from "react-toastify";
-
-const backend_url = import.meta.env.VITE_API_URL;
 
 function Results() {
   const [result, setResult] = useState({
@@ -23,7 +21,7 @@ function Results() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${backend_url}/result/`, { withCredentials: true });
+        const res = await api.get(`/result/`);
         setResult(res.data);
       } catch (err) {
         toast.error("Something went wrong", {
@@ -37,7 +35,7 @@ function Results() {
   }, []);
 
   // Format accuracy to show percentage
-  const formattedAccuracy = result.accuracy ? `${result.accuracy}%` : "-";
+  const formattedAccuracy = result.accuracy ? `${result.accuracy}` : "-";
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#2a1f33] via-[#4b3140] to-[#9b6b5e] box-border overflow-x-hidden">

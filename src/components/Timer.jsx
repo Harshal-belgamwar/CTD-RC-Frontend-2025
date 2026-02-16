@@ -1,8 +1,7 @@
-import axios from "axios";
+import api from "../api/axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const BACKEND_URL = import.meta.env.VITE_API_URL;
 
 function EventTimer() {
   const navigate = useNavigate();
@@ -10,8 +9,8 @@ function EventTimer() {
 
   useEffect(() => {
     // Fetch once on mount
-    axios
-      .get(`${BACKEND_URL}/time`, { withCredentials: true })
+    api
+      .get(`/time`)
       .then((res) => {
         setRemainingMs(res.data.remainingMs); // use raw milliseconds
       })
@@ -44,11 +43,11 @@ function EventTimer() {
     return ` ${hours} : ${minutes} : ${seconds}`;
   };
 
-  if (remainingMs === null) return <p>Loading...</p>;
+  // if (remainingMs === null) return <p></p>;
 
   return (
     <div className="bg-gradient-to-r from-[#FFE7A3] to-[#B8832F] text-[#0E0D40] font-semibold rounded-full px-4 py-2 shadow-[0_4px_0_#0D1026] border-2 border-[#FFE7A3] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300">
-      <p className="font-bold tracking-wide">{formatRemainingTime(remainingMs)}</p>
+      <p className="font-bold tracking-wide">{remainingMs == 0 ? <span>Loading...</span> : formatRemainingTime(remainingMs)}</p>
     </div>
   );
 }

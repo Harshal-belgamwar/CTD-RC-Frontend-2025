@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../api/axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -6,7 +6,6 @@ import rc_image from "/RC_Logo (3).png";
 import bg_image from "/background.svg";
 import login_image from "/LOGIN.svg";
 
-const backend_url = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -25,22 +24,29 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${backend_url}/user/login`,
+      console.log(formData, formData.username);
+
+      const username = (formData.username || "").trim();
+      const password = (formData.password || "").trim();
+      const teamname = (formData.teamname || "").trim();
+
+      console.log(formData, username);
+      const response = await api.post(
+        `/user/login`,
         {
-          username: formData.username.trim(),
-          password: formData.password.trim(),
-          teamname: formData.teamname.trim(),
+          username: username,
+          password: password,
+          teamname: teamname,
           event_id: formData.event_id,
           isjunior: formData.isjunior,
           isVerified: formData.isVerified,
-        },
-        { withCredentials: true }
+        }
       );
 
       if (response?.status === 200) {
         localStorage.setItem("currentUser", JSON.stringify(response.data.user));
         localStorage.setItem("isVerified", response.data.isVerified);
+        localStorage.setItem("token", response.data.token);
 
         toast.success(response.data.message, {
           position: "top-center",

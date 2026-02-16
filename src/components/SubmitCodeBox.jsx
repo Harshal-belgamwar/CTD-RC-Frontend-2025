@@ -16,19 +16,19 @@ const SubmitCodeBox = ({ code, onClose, Language }) => {
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3  right-3 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-sm font-semibold shadow-md transition-colors"
+          className="absolute top-3  right-3 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-sm font-semibold shadow-md transition-colors font-play"
         >
           Close
         </button>
-         <div className="relative  text-white font-semibold mb-2">
-            {Language || "Code"}
-          </div>
+        <div className="relative  text-white font-semibold mb-2 font-play">
+          {Language || "Code"}
+        </div>
 
         {/* Code block */}
         <div className="bg-[#2A2A40] flex flex-col p-5 rounded-lg overflow-auto max-h-[70vh] border border-[#555577] shadow-inner mt-5">
-          
 
-          <pre className="whitespace-pre-wrap break-words font-mono text-sm sm:text-base">
+
+          <pre className="whitespace-pre-wrap break-words font-play text-sm sm:text-base">
             <code>{decodedCode}</code>
           </pre>
         </div>

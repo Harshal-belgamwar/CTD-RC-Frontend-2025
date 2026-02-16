@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import axios from "axios";
+import api from "../api/axios";
 import Description from "../components/Description";
 import Sample from "../components/Sample";
 import Submissions from "../components/Submissions";
@@ -93,9 +93,8 @@ public class Main {
     if (!questionIndex) return;
     const fetchQuestion = async () => {
       try {
-        const res = await axios.get(
-          `${BACKEND_URL}/problems/${questionIndex}`,
-          { withCredentials: true }
+        const res = await api.get(
+          `/problems/${questionIndex}`
         );
         // console.log(res.data.id);
         setQuestion(res.data);
@@ -149,9 +148,7 @@ public class Main {
     };
 
     try {
-      const res = await axios.post(`${BACKEND_URL}/submission/run`, payload, {
-        withCredentials: true,
-      });
+      const res = await api.post(`/submission/run`, payload);
 
       // console.log(res.data.submission_id);
 
@@ -188,18 +185,17 @@ public class Main {
     setSubmitResult(null);
 
     try {
-      const res = await axios.post(
-        `${BACKEND_URL}/submission/submit`,
+      const res = await api.post(
+        `/submission/submit`,
         {
           code: encodeBase64(code),
           language,
           problem_id: question?.id || 1,
           event_id: 2,
-        },
-        { withCredentials: true }
+        }
       );
 
-      // console.log(res.error);
+
 
       // Save submission_id to trigger useEffect
 
@@ -237,6 +233,8 @@ public class Main {
         navigate("/results");
       }
 
+      console.log(err);
+
       toast.error("Something went wrong", {
         position: "top-center",
         autoClose: 2000,
@@ -256,12 +254,9 @@ public class Main {
     };
 
     try {
-      const res = await axios.post(
-        `${BACKEND_URL}/submission/run-system`,
-        payload,
-        {
-          withCredentials: true,
-        }
+      const res = await api.post(
+        `/submission/run-system`,
+        payload
       );
 
       // setActivationId(res.data.submission_id);
@@ -293,9 +288,7 @@ public class Main {
   //fetch submissions
   const fetchSubmissions = async () => {
     try {
-      const res = await axios.get(`${BACKEND_URL}/user/gethistory`, {
-        withCredentials: true,
-      });
+      const res = await api.get(`/user/gethistory`);
       const filterData = res.data.filter(
         (submission) => submission.problem_id === questionIndex
       );
@@ -324,10 +317,10 @@ public class Main {
               key={tab}
               className={`cursor-pointer px-3 py-1 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200
                 ${activeTab === tab
-                  ? "bg-gradient-to-r from-[#FFE7A3] to-[#B8832F] text-[#0E0D40] shadow-lg border border-[#FFE7A3]"
-                  : "text-[#f3e3bf] hover:text-[#FFE7A3]"
+                  ? "bg-gradient-to-r from-[#FFE7A3] to-[#B8832F] text-[#0E0D40] shadow-lg border border-[#FFE7A3] font-play"
+                  : "text-[#f3e3bf] hover:text-[#FFE7A3] font-play"
                 }`}
-              style={{ fontFamily: activeTab === tab ? "Cinzel, serif" : "" }}
+
               onClick={() => {
                 setActiveTab(tab);
                 if (tab === "Submissions") fetchSubmissions();
@@ -343,11 +336,11 @@ public class Main {
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
-              className="bg-gradient-to-r from-[#FFE7A3] to-[#E6B65C] text-[#0E0D40] font-semibold rounded-full px-6 py-2.5 shadow-[0_4px_0_#0D1026] border-2 border-[#FFE7A3] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 cursor-pointer appearance-none pr-10"
-              style={{ fontFamily: "Cinzel, serif" }}
+              className="font-play bg-gradient-to-r from-[#FFE7A3] to-[#E6B65C] text-[#0E0D40] font-semibold rounded-full px-6 py-2.5 shadow-[0_4px_0_#0D1026] border-2 border-[#FFE7A3] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 cursor-pointer appearance-none pr-10"
+
             >
               {languages.map((lang) => (
-                <option key={lang} value={lang} className="bg-[#1a1625] text-[#FFE7A3]">
+                <option key={lang} value={lang} className="bg-[#1a1625] text-[#FFE7A3] font-play">
                   {lang.toUpperCase()}
                 </option>
               ))}
@@ -387,16 +380,16 @@ public class Main {
 
           {/* Test Case Section */}
           <div className="flex flex-col border-2 border-[#c29673] rounded-lg p-4 bg-[#1a1625]/90 shadow-md text-white gap-3">
-            <div className="text-lg font-semibold text-[#FFE7A3]" style={{ fontFamily: "Cinzel, serif" }}>
+            <div className="text-lg font-semibold text-[#FFE7A3] font-play">
               Test Case
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Input Box */}
-              <div className="flex flex-col">
-                <label className="text-sm text-[#e6d4b3] mb-1">Input</label>
+              <div className="flex flex-col font-play">
+                <label className="text-sm text-[#e6d4b3] mb-1 font-play">Input</label>
                 <textarea
-                  className="bg-[#231f2f] border border-[#c29673] rounded-md p-3 text-white placeholder-[#e6d4b3]/50 focus:outline-none focus:ring-2 focus:ring-[#FFE7A3] focus:border-[#FFE7A3] resize-none"
+                  className="bg-[#231f2f] border border-[#c29673] rounded-md p-3 text-white placeholder-[#e6d4b3]/50 focus:outline-none focus:ring-2 focus:ring-[#FFE7A3] focus:border-[#FFE7A3] resize-none font-play"
                   rows={5}
                   value={machineInput}
                   onChange={(e) => setMachineInput(e.target.value)}
@@ -405,24 +398,56 @@ public class Main {
               </div>
 
               {/* Output Display Box */}
-              <div className="flex flex-col">
-                <label className="text-sm text-[#e6d4b3] mb-1">
+              <div className="flex flex-col font-play">
+                <label className="text-sm text-[#e6d4b3] mb-1 font-play">
                   Expected Output
                 </label>
-                <div className="bg-[#231f2f] border border-[#c29673] rounded-md p-3 text-white h-[120px] overflow-auto">
+                <div className="bg-[#231f2f] border border-[#c29673] rounded-md p-3 text-white h-[120px] overflow-auto font-play">
                   {machineOutput}
                 </div>
               </div>
             </div>
 
-            <button
-              disabled={isMachineRun || lastInput === machineInput || machineInput === ""}
-              className="mt-3 bg-gradient-to-r from-[#FFE7A3] to-[#B8832F] text-[#0E0D40] font-semibold py-2 px-4 rounded-lg shadow-[0_4px_0_#0D1026] border-2 border-[#FFE7A3] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 disabled:from-[#6b5d4a] disabled:to-[#4a4135] disabled:text-[#e6d4b3]/50 disabled:border-[#6b5d4a] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_0_#0D1026]"
-              onClick={machineRun}
-              style={{ fontFamily: "Cinzel, serif" }}
-            >
-              Machine Run
-            </button>
+
+            <div className="relative group inline-block w-full">
+              <button
+                disabled={isMachineRun || lastInput === machineInput || machineInput === ""}
+                className="w-full mt-3 bg-gradient-to-r from-[#FFE7A3] to-[#B8832F] text-[#0E0D40] font-semibold py-2 px-4 rounded-lg shadow-[0_4px_0_#0D1026] border-2 border-[#FFE7A3] hover:shadow-[0_2px_0_#0D1026] transition-all duration-300 disabled:from-[#6b5d4a] disabled:to-[#4a4135] disabled:text-[#e6d4b3]/50 disabled:border-[#6b5d4a] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_0_#0D1026] font-play"
+                onClick={machineRun}
+              >
+                Machine Run
+              </button>
+
+              {/* Tooltip */}
+              {(isMachineRun || lastInput === machineInput || machineInput === "") && (
+                <span
+                  className="
+        pointer-events-none
+        absolute left-1/2 -translate-x-1/2 bottom-full mb-2
+        px-3 py-1
+        text-sm text-[#0E0D40]
+        bg-[#FFE7A3]
+        rounded-md
+        opacity-0
+        group-hover:opacity-100
+        transition-opacity duration-200
+        whitespace-nowrap
+        shadow-lg
+        font-play
+      "
+                >
+                  {machineInput === ""
+                    ? "Enter input to enable Machine Run"
+                    : lastInput === machineInput
+                      ? "Change input to enable Machine Run"
+                      : isMachineRun
+                        ? "Machine is already running"
+                        : ""}
+                </span>
+              )}
+            </div>
+
+
           </div>
         </div>
 
@@ -490,7 +515,7 @@ public class Main {
           <div className="flex flex-col gap-4 mt-3">
             {submitResult ? (
               <div className="p-4 border border-[#c29673] rounded-md bg-[#1a1625]/90 text-white">
-                <p className="font-bold mb-2" style={{ fontFamily: "Cinzel, serif" }}>
+                <p className="font-bold mb-2 font-play">
                   Status:{" "}
                   <span
                     className={
@@ -503,7 +528,7 @@ public class Main {
                   </span>{" "}
                   | Score: {submitResult.score ?? 0}
                 </p>
-                <p className="mb-3 text-[#e6d4b3]">
+                <p className="mb-3 text-[#e6d4b3] font-play">
                   {submitResult.failed_test_case === 0
                     ? ` ${submitResult.total_test_case}/${submitResult.total_test_case
                     } test cases passed`
@@ -532,7 +557,7 @@ public class Main {
                           key={idx + 1}
                           className="p-2 border border-[#c29673] rounded-md bg-[#231f2f]"
                         >
-                          <p className={statusClass}>{text}</p>
+                          <p className={`font-play ${statusClass}`}>{text}</p>
                         </div>
                       );
                     }
@@ -545,12 +570,12 @@ public class Main {
                   value={customInput}
                   onChange={(e) => setCustomInput(e.target.value)}
                   placeholder="Enter custom input..."
-                  className="w-full h-[150px] p-3 bg-[#231f2f] text-white rounded-lg resize-none focus:outline-none border border-[#c29673] focus:border-[#FFE7A3] focus:ring-2 focus:ring-[#FFE7A3]/30 placeholder-[#e6d4b3]/50"
+                  className="w-full h-[150px] p-3 bg-[#231f2f] text-white rounded-lg resize-none focus:outline-none border border-[#c29673] focus:border-[#FFE7A3] focus:ring-2 focus:ring-[#FFE7A3]/30 placeholder-[#e6d4b3]/50 font-play"
                 />
 
-                <div className="w-full h-[150px] text-[#e6d4b3] text-sm sm:text-base md:text-lg p-4 overflow-y-auto bg-[#231f2f] rounded-lg border border-[#c29673]">
-                  <div className="text-[#FFE7A3] font-semibold mb-2" style={{ fontFamily: "Cinzel, serif" }}>Output:</div>
-                  <pre className="text-white">{output ?? ""}</pre>
+                <div className="w-full h-[150px] text-[#e6d4b3] text-sm sm:text-base md:text-lg p-4 overflow-y-auto bg-[#231f2f] rounded-lg border border-[#c29673] font-play">
+                  <div className="text-[#FFE7A3] font-semibold mb-2 font-play">Output:</div>
+                  <pre className="text-white font-play">{output ?? ""}</pre>
                 </div>
               </div>
             )}
@@ -561,16 +586,14 @@ public class Main {
             <button
               onClick={runCode}
               disabled={isRunning}
-              className="w-[150px] h-[50px] bg-gradient-to-r from-[#FFE7A3] to-[#E6B65C] text-[#0E0D40] font-bold border-2 border-[#FFE7A3] rounded-md shadow-[0_4px_0_#0D1026] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 disabled:from-[#6b5d4a] disabled:to-[#4a4135] disabled:text-[#e6d4b3]/50 disabled:border-[#6b5d4a] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_0_#0D1026]"
-              style={{ fontFamily: "Cinzel, serif" }}
+              className="w-[150px] h-[50px] bg-gradient-to-r from-[#FFE7A3] to-[#E6B65C] text-[#0E0D40] font-bold border-2 border-[#FFE7A3] rounded-md shadow-[0_4px_0_#0D1026] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 disabled:from-[#6b5d4a] disabled:to-[#4a4135] disabled:text-[#e6d4b3]/50 disabled:border-[#6b5d4a] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_0_#0D1026] font-play"
             >
               Run
             </button>
             <button
               onClick={submitCode}
               disabled={isSubmitting}
-              className="w-[150px] h-[50px] bg-gradient-to-r from-[#FFE7A3] to-[#E6B65C] text-[#0E0D40] font-bold border-2 border-[#FFE7A3] rounded-md shadow-[0_4px_0_#0D1026] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 disabled:from-[#6b5d4a] disabled:to-[#4a4135] disabled:text-[#e6d4b3]/50 disabled:border-[#6b5d4a] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_0_#0D1026]"
-              style={{ fontFamily: "Cinzel, serif" }}
+              className="w-[150px] h-[50px] bg-gradient-to-r from-[#FFE7A3] to-[#E6B65C] text-[#0E0D40] font-bold border-2 border-[#FFE7A3] rounded-md shadow-[0_4px_0_#0D1026] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 disabled:from-[#6b5d4a] disabled:to-[#4a4135] disabled:text-[#e6d4b3]/50 disabled:border-[#6b5d4a] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_0_#0D1026] font-play"
             >
               Submit
             </button>

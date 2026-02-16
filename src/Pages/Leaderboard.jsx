@@ -1,19 +1,11 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { FaArrowLeft, FaArrowRight, FaCrown, FaTrophy, FaMedal } from "react-icons/fa";
 import { GiGreekTemple, GiLaurelCrown, GiScrollQuill } from "react-icons/gi";
 import Navbar from "../components/Navbar";
-
-const backend_url = import.meta.env.VITE_API_URL;
-
 const fetchStudents = async () => {
   try {
-    const response = await axios.get(`${backend_url}/leaderboard/`, {
-      withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await api.get(`/leaderboard/`);
 
     // Transform backend response into frontend format
     return response.data.map((item) => ({
@@ -131,20 +123,22 @@ function Leaderboard() {
             relative
           "
         >
-          {/* Table Header with gradient */}
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FFE7A3]/10 via-transparent to-[#FFE7A3]/10" />
+
+
+
+          {/* Table Body with scroll */}
+          <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#c29673] scrollbar-track-transparent">
             <table className="w-full table-fixed text-center text-white tracking-wide">
-              <thead className="text-base md:text-lg font-bold">
+
+              <thead className="text-base md:text-lg font-bold sticky top-0 bg-[#1a1625] z-10">
                 <tr className="border-b-2 border-[#c29673]">
                   <th className="py-5 w-[10%] relative">
                     <span className="flex items-center justify-center gap-2 font-play">
-
                       RANK
                     </span>
                   </th>
                   <th className="w-[22%] font-play">USERNAME</th>
-                  <th className="w-[7%]  font-play">Q1</th>
+                  <th className="w-[7%] font-play">Q1</th>
                   <th className="w-[7%] font-play">Q2</th>
                   <th className="w-[7%] font-play">Q3</th>
                   <th className="w-[7%] font-play">Q4</th>
@@ -152,12 +146,7 @@ function Leaderboard() {
                   <th className="w-[13%] font-play">SCORE</th>
                 </tr>
               </thead>
-            </table>
-          </div>
 
-          {/* Table Body with scroll */}
-          <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#c29673] scrollbar-track-transparent">
-            <table className="w-full table-fixed text-center text-white tracking-wide">
               <tbody>
                 {currentData.map((student, idx) => {
                   const rank = startIndex + idx + 1;
@@ -167,46 +156,43 @@ function Leaderboard() {
                     <tr
                       key={student.username}
                       className={`
-                        relative
-                        text-base md:text-lg 
-                        transition-all duration-300 
-                        hover:bg-gradient-to-r hover:from-[#c29673]/20 hover:to-transparent
-                        cursor-pointer
-                        group
-                        ${isTop3 ? 'bg-gradient-to-r from-[#FFE7A3]/5 to-transparent' : ''}
-                      `}
+              relative
+              text-base md:text-lg 
+              transition-all duration-300 
+              hover:bg-gradient-to-r hover:from-[#c29673]/20 hover:to-transparent
+              cursor-pointer
+              group
+              ${isTop3 ? 'bg-gradient-to-r from-[#FFE7A3]/5 to-transparent' : ''}
+            `}
                       onMouseEnter={() => setHoveredRow(rank)}
                       onMouseLeave={() => setHoveredRow(null)}
                     >
-                      {/* Rank cell with icon */}
+                      {/* Rank */}
                       <td className="py-5 font-semibold relative">
-                        <div className="flex items-center justify-center gap-2">
-                          {getRankIcon(rank)}
+                        <div className="flex items-center justify-center gap-2 ">
                           <span className={`
-                            ${rank === 1 ? 'text-[#FFD700]' :
+                  ${rank === 1 ? 'text-[#FFD700] font-play' :
                               rank === 2 ? 'text-[#C0C0C0]' :
                                 rank === 3 ? 'text-[#CD7F32]' :
                                   'text-[#FFE7A3]'}
-                            font-bold text-lg
-                          `}>
+                  font-bold text-lg
+                `}>
                             {rank}
                           </span>
                         </div>
-
                       </td>
 
-                      {/* Username with special styling for top performers */}
+                      {/* Username */}
                       <td className="font-bold">
                         <span className={`
-                          ${isTop3 ? 'text-[#FFE7A3]' : 'text-white'}
-                           tracking-wider
-                          relative
-                          inline-block
-                          group-hover:scale-105
-                          transition-transform duration-300
-                        `}>
+                ${isTop3 ? 'text-[#FFE7A3]' : 'text-white'}
+                tracking-wider font-play
+                relative
+                inline-block
+                group-hover:scale-105
+                transition-transform duration-300 font-play
+              `}>
                           {student.username}
-
                         </span>
                       </td>
 
@@ -214,44 +200,42 @@ function Leaderboard() {
                       {student.scores.map((s, i) => (
                         <td key={i} className="text-[#e6d4b3] font-medium">
                           <span className={`
-                            ${s > 0 ? 'text-[#e6d4b3]' : 'text-gray-500'}
-                            ${hoveredRow === rank ? 'scale-110 inline-block' : ''}
-                            transition-all duration-300
-                          `}>
+                  ${s > 0 ? 'text-[#e6d4b3]' : 'text-gray-500'}
+                  ${hoveredRow === rank ? 'scale-110 inline-block' : ''}
+                  transition-all duration-300 font-play
+                `}>
                             {s}
                           </span>
                         </td>
                       ))}
 
                       {/* Time */}
-                      <td className="text-[#e6d4b3] text-sm">
+                      <td className="text-[#e6d4b3] text-sm font-play">
                         {student.time}
                       </td>
 
-                      {/* Score with glow effect */}
+                      {/* Score */}
                       <td className="font-bold text-xl relative">
                         <span className={`
-                          ${isTop3 ? 'text-[#FFE7A3]' : 'text-[#e6d4b3]'}
-                          drop-shadow-[0_0_10px_rgba(255,231,163,0.3)]
-                          group-hover:drop-shadow-[0_0_20px_rgba(255,231,163,0.6)]
-                          transition-all duration-300
-                        `}>
+                ${isTop3 ? 'text-[#FFE7A3]' : 'text-[#e6d4b3]'}
+                drop-shadow-[0_0_10px_rgba(255,231,163,0.3)]
+                group-hover:drop-shadow-[0_0_20px_rgba(255,231,163,0.6)]
+                transition-all duration-300 font-play
+              `}>
                           {student.total}
                         </span>
                       </td>
-
-                      {/* Animated bottom border on hover */}
-                      <td className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#FFE7A3] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     </tr>
                   );
                 })}
               </tbody>
+
             </table>
 
             {/* Empty state */}
             {currentData.length === 0 && (
               <div className="text-center py-10 text-[#e6d4b3]">
-                <GiScrollQuill className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <GiScrollQuill className="w-12 h-12 mx-auto mb-4 opacity-50 font-play" />
                 <p>No participants yet</p>
               </div>
             )}
@@ -315,14 +299,7 @@ function Leaderboard() {
         </div>
       </div>
 
-      {/* Stats Footer */}
-      <div className="relative z-10 mt-8 w-[90%] lg:w-[85%] mx-auto flex justify-between items-center text-[#e6d4b3] text-sm px-4">
 
-        <div className="flex items-center gap-2">
-          <GiScrollQuill className="text-[#FFE7A3]" />
-          <span>Total Participants: {sortedData.length}</span>
-        </div>
-      </div>
     </div>
   );
 }

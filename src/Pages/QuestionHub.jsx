@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Timer from "../components/Timer";
 
-const backend_url = import.meta.env.VITE_API_URL;
 
 const QuestionHub = () => {
   const [accuracy, setAccuracy] = useState([]);
@@ -15,9 +14,7 @@ const QuestionHub = () => {
   useEffect(() => {
     const getQuestions = async () => {
       try {
-        const response = await axios.get(`${backend_url}/problems/accuracy`, {
-          withCredentials: true,
-        });
+        const response = await api.get(`/problems/accuracy`);
         setAccuracy(response.data);
       } catch (error) {
         console.error("Error fetching accuracy:", error);
@@ -41,33 +38,33 @@ const QuestionHub = () => {
       </nav>
 
       {/* Heading */}
-      <div className="mt-[5%] text-center relative">
+      <div className="mt-10 text-center relative">
         <h1
           className="
-            font-black 
-            text-4xl sm:text-5xl md:text-6xl lg:text-7xl 
+            font-black font-stranger
+            text-4xl sm:text-5xl md:text-6xl lg:text-5xl 
             tracking-wider
             bg-gradient-to-b from-[#FFE7A3] via-[#E6B65C] to-[#B8832F]
             bg-clip-text text-transparent
             [-webkit-text-stroke:1px_#1B1F4A]
-            drop-shadow-[4px_4px_0_#0D1026]
+            drop-shadow-[3px_3px_0_#0D1026]
             inline-block
             px-8 py-4
           "
-          style={{ fontFamily: "Cinzel, serif" }}
+
         >
           QUESTION HUB
         </h1>
-        <div className="w-32 h-1 bg-gradient-to-r from-transparent via-[#FFE7A3] to-transparent mx-auto mt-2"></div>
+
       </div>
 
       {/* Timer Section */}
-      <div className="mt-5 flex justify-end w-[90%] lg:w-[85vw] mx-auto p-4">
+      <div className=" flex justify-end w-[90%] lg:w-[85vw] mx-auto p-4">
         <Timer />
       </div>
 
       {/* Grid */}
-      <div className="w-full max-w-6xl mx-auto mt-[5rem]  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-12 px-4 sm:px-6 lg:px-12 mb-12">
+      <div className="w-full max-w-6xl mx-auto mt-5  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-12 px-4 sm:px-6 lg:px-12 mb-12">
         {Array.from({ length: 4 }).map((_, index) => {
           const accString = accuracy[index]?.accuracy || "0%";
           const acc = Math.round(parseFloat(accString.replace("%", "")));
@@ -127,9 +124,9 @@ const QuestionHub = () => {
                       text-4xl sm:text-5xl md:text-6xl lg:text-7xl
                       drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]
                       transform group-hover:scale-110
-                      transition-transform duration-300
+                      transition-transform duration-300 font-play
                     "
-                    style={{ fontFamily: "Cinzel, serif" }}
+
                   >
                     {`Q${index + 1}`}
                   </span>
@@ -140,7 +137,7 @@ const QuestionHub = () => {
                   <span
                     className="
     text-sm sm:text-base md:text-lg 
-    font-medium
+    font-medium font-play
     text-[#4a4135]
   "
                   >
@@ -153,10 +150,7 @@ const QuestionHub = () => {
         })}
       </div>
 
-      {/* Footer Note */}
-      <div className="text-center text-[#e6d4b3] text-sm pb-8 opacity-60">
-        Click on any question to start coding
-      </div>
+
     </div>
   );
 };

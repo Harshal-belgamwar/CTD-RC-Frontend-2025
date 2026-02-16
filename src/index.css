@@ -8,13 +8,13 @@
 @theme {
 
   --font-play: "Play";
-  --font-stranger: "Stranger Doctor";
+  --font-stranger: "StrangerDoctor";
 }
 
 /* 4. base layer styles */
 @font-face {
-  font-family: 'Stranger Doctor';
-  src: url('/fonts/Stranger Doctor.ttf') format('truetype');
+  font-family: 'StrangerDoctor';
+  src: url('/fonts/StrangerDoctor.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 

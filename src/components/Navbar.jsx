@@ -1,8 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import axios from "axios";
-import rc_image from "../../public/RC_Logo (3).png"
-
-const backend_url = import.meta.env.VITE_API_URL;
+import api from "../api/axios";
+import rc_image from "/RC_Logo (3).png";
 
 const Navbar = () => {
 
@@ -15,12 +13,9 @@ const Navbar = () => {
         localStorage.removeItem(key);
       }
     }
-    await axios.post(
-      `${backend_url}/user/logout`,
-      {},
-      {
-        withCredentials: true,
-      }
+    await api.post(
+      `/user/logout`,
+      {}
     );
 
     navigate("/");

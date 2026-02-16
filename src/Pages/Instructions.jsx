@@ -68,14 +68,14 @@ const InstructionItem = ({ number, text }) => {
       ">
         <span
           className="
-            text-[#0E0D40] 
+            text-[#0E0D40] font-play
             font-black 
             text-lg sm:text-xl
             -rotate-45
             group-hover:-rotate-90
             transition-all duration-500
           "
-          style={{ fontFamily: "Cinzel, serif" }}
+
         >
           {number}
         </span>
@@ -84,7 +84,7 @@ const InstructionItem = ({ number, text }) => {
       {/* Text */}
       <p
         className="
-          flex-1
+          flex-1 font-play
           text-[#f3e3bf] 
           text-sm sm:text-base lg:text-lg
           leading-relaxed
@@ -92,14 +92,14 @@ const InstructionItem = ({ number, text }) => {
           transition-colors duration-300
           pt-1
         "
-        style={{ fontFamily: "Cinzel, serif" }}
+
       >
         {text}
       </p>
 
       {/* Decorative dot */}
       <div className="
-        w-2 h-2
+        w-2 h-2 
         bg-[#FFE7A3]
         rounded-full
         opacity-0 group-hover:opacity-100
@@ -114,17 +114,17 @@ const Instructions = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#3A2A3F] via-[#6B4A55] to-[#9E6A6A] tracking-wide">
       <Navbar />
-      <div className="flex flex-col items-center justify-center space-y-15 px-4 sm:px-6 lg:px-8 py-5">
+      <div className="flex flex-col items-center justify-center space-y-10 px-4 sm:px-6 lg:px-8 py-5">
         {/* Enhanced Title with your theme */}
         <h1
           className="
-      text-4xl sm:text-5xl lg:text-6xl font-stranger
+      text-4xl sm:text-5xl lg:text-5xl font-stranger
       font-extrabold 
       py-4 
       text-transparent 
       bg-clip-text 
       bg-gradient-to-b from-[#FFE7A3] via-[#E6B65C] to-[#B8832F]
-      drop-shadow-[2px_2px_0_#0D1026]
+      drop-shadow-[3px_3px_0_#0D1026]
       [-webkit-text-stroke:1px_#1B1F4A]
       relative
       group 
@@ -182,7 +182,7 @@ const Instructions = () => {
         font-extrabold 
         bg-gradient-to-b from-[#E6B65C] via-[#D19A66] to-[#B8832F]
         border-[3px] border-[#FFE7A3]
-        mt-6 
+
         py-4 px-10 sm:px-15 
         rounded-[50px] 
         shadow-[0_8px_0_#0D1026,inset_0_2px_8px_rgba(255,231,163,0.6)]
@@ -195,9 +195,8 @@ const Instructions = () => {
         text-base sm:text-lg lg:text-xl
         tracking-wider
         flex items-center justify-center gap-3
-        min-w-[200px] sm:min-w-[250px]
+        min-w-[200px] sm:min-w-[250px] font-play
       "
-            style={{ fontFamily: "Cinzel, serif" }}
           >
             {/* Shine effect */}
             <div className="
