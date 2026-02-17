@@ -110,23 +110,22 @@ const QuestionHub = () => {
                     className="absolute bottom-0 left-0 w-full transition-all duration-1000 ease-out"
                     style={{
                       height: `${fillPercent * 100}%`,
-                      background: "linear-gradient(180deg, #3B82F6 0%, #2563EB 50%, #1E3A8A 100%)",
+                      background: "linear-gradient(180deg, #E6B65C 0%, #B8832F 50%, #8B5A2B 100%)",
+
                     }}
                   />
 
                   {/* Question Number */}
                   <span
                     className="
-                      z-10 
-                      font-black 
-                      text-transparent bg-clip-text 
-                      bg-gradient-to-b from-[#FFE7A3] to-[#B8832F]
-                      text-4xl sm:text-5xl md:text-6xl lg:text-7xl
-                      drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]
-                      transform group-hover:scale-110
-                      transition-transform duration-300 font-play
-                    "
-
+    z-10 
+    font-black 
+    text-[#E6B65C]
+    text-4xl sm:text-5xl md:text-6xl lg:text-7xl
+    drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]
+    transform group-hover:scale-110
+    transition-transform duration-300 font-play
+  "
                   >
                     {`Q${index + 1}`}
                   </span>
