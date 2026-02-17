@@ -14,7 +14,7 @@ function EventTimer() {
       .then((res) => {
         setRemainingMs(res.data.remainingMs); // use raw milliseconds
       })
-      .catch((err) => console.error("Error fetching event time:", err));
+      .catch((err) => void(0));
   }, []);
 
   useEffect(() => {

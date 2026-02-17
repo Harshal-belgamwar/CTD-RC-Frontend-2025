@@ -38,7 +38,7 @@ const FullscreenMonitor = () => {
     if (document.fullscreenElement) {
       document.exitFullscreen()
         // .then(() => console.log("Exited fullscreen"))
-        .catch((err) => console.error("Failed to exit fullscreen:", err));
+        .catch((err) => void(0));
     }
   }
 

@@ -24,13 +24,13 @@ const Login = () => {
     setLoading(true);
 
     try {
-      console.log(formData, formData.username);
+      // console.log(formData, formData.username);
 
       const username = (formData.username || "").trim();
       const password = (formData.password || "").trim();
       const teamname = (formData.teamname || "").trim();
 
-      console.log(formData, username);
+      // console.log(formData, username);
       const response = await api.post(
         `/user/login`,
         {

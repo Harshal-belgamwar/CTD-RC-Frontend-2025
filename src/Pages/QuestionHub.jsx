@@ -17,7 +17,7 @@ const QuestionHub = () => {
         const response = await api.get(`/problems/accuracy`);
         setAccuracy(response.data);
       } catch (error) {
-        console.error("Error fetching accuracy:", error);
+        void(0);
       }
     };
     getQuestions();
