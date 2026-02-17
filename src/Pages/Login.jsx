@@ -30,7 +30,7 @@ const Login = () => {
       const password = (formData.password || "").trim();
       const teamname = (formData.teamname || "").trim();
 
-      console.log(username + " " + password + " " + teamname);
+      // console.log(username + " " + password + " " + teamname);
 
       // console.log(formData, username);
       const response = await api.post(
