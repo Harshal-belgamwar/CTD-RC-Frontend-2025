@@ -8,7 +8,7 @@ const instructionsData = [
   },
   {
     number: "02",
-    text: "Time duration: 45 minutes",
+    text: "Time duration: 60 minutes",
   },
   {
     number: "03",
