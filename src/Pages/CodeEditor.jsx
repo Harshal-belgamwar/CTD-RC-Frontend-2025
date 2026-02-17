@@ -10,7 +10,7 @@ import { io } from "socket.io-client";
 import Timer from "../components/Timer";
 import { toast } from "react-toastify";
 
-const BACKEND_URL = import.meta.env.VITE_API_URL;
+const BACKEND_URL = import.meta.env.VITE_API_URL_SOCKET;
 
 function encodeBase64(str) {
   const encoder = new TextEncoder();
