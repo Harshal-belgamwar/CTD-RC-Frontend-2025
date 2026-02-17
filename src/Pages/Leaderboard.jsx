@@ -133,17 +133,17 @@ function Leaderboard() {
               <thead className="text-base md:text-lg font-bold sticky top-0 bg-[#1a1625] z-10">
                 <tr className="border-b-2 border-[#c29673]">
                   <th className="py-5 w-[10%] relative">
-                    <span className="flex items-center justify-center gap-2 font-play">
+                    <span className="flex items-center justify-center gap-2 font-play text-[#f3e3bf]">
                       RANK
                     </span>
                   </th>
-                  <th className="w-[22%] font-play">USERNAME</th>
-                  <th className="w-[7%] font-play">Q1</th>
-                  <th className="w-[7%] font-play">Q2</th>
-                  <th className="w-[7%] font-play">Q3</th>
-                  <th className="w-[7%] font-play">Q4</th>
-                  <th className="w-[13%] font-play">TIME</th>
-                  <th className="w-[13%] font-play">SCORE</th>
+                  <th className="w-[22%] font-play text-[#f3e3bf]">USERNAME</th>
+                  <th className="w-[7%] font-play text-[#f3e3bf]">Q1</th>
+                  <th className="w-[7%] font-play text-[#f3e3bf]">Q2</th>
+                  <th className="w-[7%] font-play text-[#f3e3bf]">Q3</th>
+                  <th className="w-[7%] font-play text-[#f3e3bf]">Q4</th>
+                  <th className="w-[13%] font-play text-[#f3e3bf]">TIME</th>
+                  <th className="w-[13%] font-play text-[#f3e3bf]">SCORE</th>
                 </tr>
               </thead>
 
