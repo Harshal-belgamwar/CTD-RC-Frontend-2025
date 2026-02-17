@@ -14,66 +14,66 @@ import PublicRoutes from "./ProtectedRoutes/PublicRoutes";
 
 function App() {
 
-  // const location = useLocation();
+  const location = useLocation();
 
-  // // Pages where FullscreenMonitor should NOT appear
-  // const excludedPages = ["/", "/instructions"];
-  // const showFullscreenMonitor = !excludedPages.includes(location.pathname);
-  // const switchTab = !excludedPages.includes(location.pathname);
+  // Pages where FullscreenMonitor should NOT appear
+  const excludedPages = ["/", "/instructions"];
+  const showFullscreenMonitor = !excludedPages.includes(location.pathname);
+  const switchTab = !excludedPages.includes(location.pathname);
 
 
-  // useEffect(() => {
-  //   const isLoginPage = window.location.pathname === "/";
+  useEffect(() => {
+    const isLoginPage = window.location.pathname === "/";
 
-  //   const disable = (e) => e.preventDefault();
+    const disable = (e) => e.preventDefault();
 
-  //   // ❌ Block only on non-login pages
-  //   if (!isLoginPage) {
-  //     document.addEventListener("contextmenu", disable);
-  //     document.addEventListener("selectstart", disable);
-  //     document.addEventListener("copy", disable);
-  //     document.addEventListener("cut", disable);
-  //     document.addEventListener("paste", disable);
-  //   }
+    // ❌ Block only on non-login pages
+    if (!isLoginPage) {
+      document.addEventListener("contextmenu", disable);
+      document.addEventListener("selectstart", disable);
+      document.addEventListener("copy", disable);
+      document.addEventListener("cut", disable);
+      document.addEventListener("paste", disable);
+    }
 
-  //   const blockKeys = (e) => {
-  //     // ✅ Allow everything on login page
-  //     if (isLoginPage) return;
+    const blockKeys = (e) => {
+      // ✅ Allow everything on login page
+      if (isLoginPage) return;
 
-  //     if (e.ctrlKey && e.shiftKey && ["I", "J"].includes(e.key)) {
-  //       e.preventDefault();
-  //     }
+      if (e.ctrlKey && e.shiftKey && ["I", "J"].includes(e.key)) {
+        e.preventDefault();
+      }
 
-  //     if (
-  //       (e.ctrlKey && ["c", "v", "x", "u"].includes(e.key.toLowerCase())) ||
-  //       e.key === "F12"
-  //     ) {
-  //       e.preventDefault();
-  //     }
+      if (
+        (e.ctrlKey && ["c", "v", "x", "u"].includes(e.key.toLowerCase())) ||
+        e.key === "F12"
+      ) {
+        e.preventDefault();
+      }
 
-  //     if (e.shiftKey && e.key === "Insert") e.preventDefault();
-  //     if (e.ctrlKey && e.key === "Tab") e.preventDefault();
-  //   };
+      if (e.shiftKey && e.key === "Insert") e.preventDefault();
+      if (e.ctrlKey && e.key === "Tab") e.preventDefault();
+    };
 
-  //   const handleVisibility = () => {
-  //     if (document.hidden && switchTab) {
-  //       toast.error("⚠ Tab switching is not allowed!", { autoClose: 3000 });
-  //     }
-  //   };
+    const handleVisibility = () => {
+      if (document.hidden && switchTab) {
+        toast.error("⚠ Tab switching is not allowed!", { autoClose: 3000 });
+      }
+    };
 
-  //   document.addEventListener("keydown", blockKeys);
-  //   document.addEventListener("visibilitychange", handleVisibility);
+    document.addEventListener("keydown", blockKeys);
+    document.addEventListener("visibilitychange", handleVisibility);
 
-  //   return () => {
-  //     document.removeEventListener("contextmenu", disable);
-  //     document.removeEventListener("selectstart", disable);
-  //     document.removeEventListener("copy", disable);
-  //     document.removeEventListener("cut", disable);
-  //     document.removeEventListener("paste", disable);
-  //     document.removeEventListener("keydown", blockKeys);
-  //     document.removeEventListener("visibilitychange", handleVisibility);
-  //   };
-  // }, [switchTab]);
+    return () => {
+      document.removeEventListener("contextmenu", disable);
+      document.removeEventListener("selectstart", disable);
+      document.removeEventListener("copy", disable);
+      document.removeEventListener("cut", disable);
+      document.removeEventListener("paste", disable);
+      document.removeEventListener("keydown", blockKeys);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [switchTab]);
 
 
   return (
@@ -89,7 +89,7 @@ function App() {
 
       />
 
-      /* {showFullscreenMonitor && <FullscreenMonitor />} */
+        {showFullscreenMonitor && <FullscreenMonitor />} 
 
       <Routes>
         <Route element={<PublicRoutes />}>
