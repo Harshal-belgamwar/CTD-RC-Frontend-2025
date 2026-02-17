@@ -17,7 +17,7 @@ const QuestionHub = () => {
         const response = await api.get(`/problems/accuracy`);
         setAccuracy(response.data);
       } catch (error) {
-        void(0);
+        void (0);
       }
     };
     getQuestions();
@@ -110,7 +110,7 @@ const QuestionHub = () => {
                     className="absolute bottom-0 left-0 w-full transition-all duration-1000 ease-out"
                     style={{
                       height: `${fillPercent * 100}%`,
-                      background: "linear-gradient(180deg, #FFE7A3 0%, #E6B65C 50%, #B8832F 100%)",
+                      background: "linear-gradient(180deg, #3B82F6 0%, #2563EB 50%, #1E3A8A 100%)",
                     }}
                   />
 

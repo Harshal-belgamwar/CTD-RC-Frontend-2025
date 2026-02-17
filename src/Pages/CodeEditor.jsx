@@ -457,7 +457,7 @@ public class Main {
           style={{ height: "700px" }}
         >
           {/* Editor */}
-          <div className="flex-1 border border-[#c29673] rounded-t-lg overflow-hidden">
+          <div className="h-[420px] min-h-[420px] border border-[#c29673] rounded-t-lg overflow-hidden">
             <Editor
               height="100%"
               language={language}
@@ -512,22 +512,32 @@ public class Main {
           </div>
 
           {/* Custom Test Case / Submission Results */}
-          <div className="flex flex-col gap-4 mt-3">
+          <div className="flex flex-col gap-4 mt-3 overflow-y-auto">
             {submitResult ? (
               <div className="p-4 border border-[#c29673] rounded-md bg-[#1a1625]/90 text-white">
-                <p className="font-bold mb-2 font-play">
-                  Status:{" "}
-                  <span
-                    className={
-                      submitResult.status?.toLowerCase() === "accepted"
-                        ? "text-[#FFE7A3]"
-                        : "text-[#ff6b6b]"
-                    }
+                <p className="font-bold mb-2 font-play flex justify-between items-center">
+                  <span>
+                    Status:{" "}
+                    <span
+                      className={
+                        submitResult.status?.toLowerCase() === "accepted"
+                          ? "text-[#FFE7A3]"
+                          : "text-[#ff6b6b]"
+                      }
+                    >
+                      {submitResult.status}
+                    </span>{" "}
+                    | Score: {submitResult.score ?? 0}
+                  </span>
+
+                  <button
+                    className="ml-2 text-[#e6d4b3] hover:text-[#FFE7A3] transition font-play"
+                    onClick={() => setSubmitResult(null)} // or your close handler
                   >
-                    {submitResult.status}
-                  </span>{" "}
-                  | Score: {submitResult.score ?? 0}
+                    Close
+                  </button>
                 </p>
+
                 <p className="mb-3 text-[#e6d4b3] font-play">
                   {submitResult.failed_test_case === 0
                     ? ` ${submitResult.total_test_case}/${submitResult.total_test_case
@@ -535,6 +545,7 @@ public class Main {
                     : `${submitResult.failed_test_case - 1} / ${submitResult.total_test_case
                     } test cases passed`}
                 </p>
+
                 <div className="space-y-2">
                   {Array.from({ length: submitResult.total_test_case }).map(
                     (_, idx) => {
@@ -582,10 +593,10 @@ public class Main {
           </div>
 
           {/* Run & Submit buttons */}
-          <div className="mt-4 flex gap-3 justify-end text-black font-bold text-xl">
+          <div className="mt-5 flex gap-3 justify-end text-black font-bold text-xl">
             <button
               onClick={runCode}
-              disabled={isRunning}
+              disabled={isRunning || customInput === ""}
               className="w-[150px] h-[50px] bg-gradient-to-r from-[#FFE7A3] to-[#E6B65C] text-[#0E0D40] font-bold border-2 border-[#FFE7A3] rounded-md shadow-[0_4px_0_#0D1026] hover:shadow-[0_2px_0_#0D1026] hover:-translate-y-1 hover:scale-105 transition-all duration-300 disabled:from-[#6b5d4a] disabled:to-[#4a4135] disabled:text-[#e6d4b3]/50 disabled:border-[#6b5d4a] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_0_#0D1026] font-play"
             >
               Run
