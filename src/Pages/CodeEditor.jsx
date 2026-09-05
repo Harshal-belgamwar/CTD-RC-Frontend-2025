@@ -6,11 +6,10 @@ import api from "../api/axios";
 import Description from "../components/Description";
 import Sample from "../components/Sample";
 import Submissions from "../components/Submissions";
-import { io } from "socket.io-client";
 import Timer from "../components/Timer";
 import { toast } from "react-toastify";
 
-const BACKEND_URL = "https://rcnode.credenz.co.in";
+const BACKEND_URL = "http://localhost:3000";
 
 function encodeBase64(str) {
   const encoder = new TextEncoder();
@@ -18,6 +17,30 @@ function encodeBase64(str) {
   let binary = "";
   bytes.forEach((b) => (binary += String.fromCharCode(b)));
   return btoa(binary);
+}
+
+function subscribeToSubmission(submissionId, onResult, activeStreams) {
+  if (activeStreams.has(submissionId)) return;
+
+  const eventSource = new EventSource(
+    `${BACKEND_URL}/submission/sse/${submissionId}`,
+    { withCredentials: true }
+  );
+  activeStreams.set(submissionId, eventSource);
+
+  eventSource.addEventListener('result', (event) => {
+    try {
+      onResult(JSON.parse(event.data));
+    } finally {
+      activeStreams.delete(submissionId);
+      eventSource.close();
+    }
+  });
+
+  eventSource.onerror = () => {
+    activeStreams.delete(submissionId);
+    eventSource.close();
+  };
 }
 
 const CodeEditor = () => {
@@ -44,11 +67,20 @@ const CodeEditor = () => {
   const [lastInput, setLastInput] = useState("");
 
   const leftColRef = useRef(null);
-  const socketRef = useRef(null);
+  const activeStreamsRef = useRef(new Map());
   const navigate = useNavigate();
 
   const location = useLocation();
   const questionIndex = location.state?.problem_id;
+
+  useEffect(() => {
+    const activeStreams = activeStreamsRef.current;
+
+    return () => {
+      activeStreams.forEach((eventSource) => eventSource.close());
+      activeStreams.clear();
+    };
+  }, []);
 
   const defaultCode = {
     cpp: `#include <iostream>
@@ -88,202 +120,156 @@ public class Main {
     return () => clearTimeout(timer);
   }, [code, question, language]);
 
-  //fetch question
-  useEffect(() => {
-    if (!questionIndex) return;
-    const fetchQuestion = async () => {
-      try {
-        const res = await api.get(
-          `/problems/${questionIndex}`
-        );
-        // console.log(res.data.id);
-        setQuestion(res.data);
-
-      } catch (err) {
-        toast.error("Something went wrong", {
-          position: "top-center",
-          autoClose: 2000,
-        });
-        // console.error("Error fetching question:", err);
-      }
-    };
-    fetchQuestion();
-  }, [questionIndex]);
-
-  //io initialization for run and submit code
-  useEffect(() => {
-    // Only create socket if not already created
-    if (!socketRef.current) {
-      socketRef.current = io(BACKEND_URL, {
-        withCredentials: true,
-        transports: ["websocket"],
-      });
-
-      socketRef.current.on("connect", () => {
-        // console.log("Socket connected:", socketRef.current.id);
-      });
-    }
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, []);
-
-  // Run code
-  const runCode = async () => {
-    setIsRunning(true);
-    setOutput(null);
-    setSubmitResult(null);
-
-
-    const payload = {
-      code: encodeBase64(code),
-      customTestcase: encodeBase64(customInput),
-      language,
-      problem_id: question?.id || 1,
-      event_id: 2,
-    };
-
+//fetch question
+useEffect(() => {
+  if (!questionIndex) return;
+  const fetchQuestion = async () => {
     try {
-      const res = await api.post(`/submission/run`, payload);
-
-      // console.log(res.data.submission_id);
-
-      // setActivationId(res.data.submission_id);
-
-      const handleResult = (data) => {
-        // console.log(data);
-        if (data.user_output) {
-          setOutput(data.user_output);
-        } else {
-          setOutput(`${data.status} : ${data.message}`);
-        }
-        // Remove listener after receiving result
-
-        setIsRunning(false);
-        socketRef.current.off("result", handleResult);
-      };
-
-      // Subscribe to this submission
-
-      socketRef.current.emit("subscribe", res.data.submission_id);
-      socketRef.current.on("result", handleResult);
-    } catch (err) {
-      if (err.response.status === 403) {
-        navigate("/results");
-      }
-      setOutput("Error: " + (err.response?.data?.message || err.message));
-    }
-  };
-
-  const submitCode = async () => {
-    setIsSubmitting(true);
-    setOutput(null);
-    setSubmitResult(null);
-
-    try {
-      const res = await api.post(
-        `/submission/submit`,
-        {
-          code: encodeBase64(code),
-          language,
-          problem_id: question?.id || 1,
-          event_id: 2,
-        }
+      const res = await api.get(
+        `/problems/${questionIndex}`
       );
-
-
-
-      // Save submission_id to trigger useEffect
-
-
-      const handleResult = (data) => {
-        // console.log(data);
-        const parsedData = {
-          status: data.status || "unknown",
-          message: data.message || "",
-          failed_test_case: parseInt(data.failed_test_case ?? "0", 10),
-          total_test_case: parseInt(data.total_test_case ?? "0", 10),
-          score: parseInt(data.score ?? "0", 10),
-        };
-
-        setSubmitResult(parsedData);
-
-        if (
-          parsedData.status === "accepted" &&
-          !localStorage.getItem(`solved_${questionIndex}`)
-        ) {
-          localStorage.setItem(`solved_${questionIndex}`, "solved");
-        }
-        setIsSubmitting(false)
-
-        // Remove listener after handling result
-        socketRef.current.off("result", handleResult);
-      };
-
-      // Subscribe to this submission
-      socketRef.current.emit("subscribe", res.data.submission_id);
-      socketRef.current.on("result", handleResult);
+      // console.log(res.data.id);
+      setQuestion(res.data);
 
     } catch (err) {
-      if (err.response.status === 403) {
+      if (err?.response?.status === 403) {
         navigate("/results");
+        return;
       }
-
-      console.log(err);
-
       toast.error("Something went wrong", {
         position: "top-center",
         autoClose: 2000,
       });
+      console.error("Error fetching question:", err);
     }
   };
+  fetchQuestion();
+}, [questionIndex]);
 
-  const machineRun = async () => {
-    setMachineOutput(null);
-    setIsMachineRun(true);
-    setLastInput(machineInput);
+// Run code
+const runCode = async () => {
+  setIsRunning(true);
+  setOutput(null);
+  setSubmitResult(null);
 
-    const payload = {
-      customTestcase: encodeBase64(machineInput),
-      problem_id: question?.id || 1,
-      event_id: 2,
-    };
+  const payload = {
+    code: encodeBase64(code),
+    customTestcase: encodeBase64(customInput),
+    language,
+    problem_id: question?.id || 1,
+    event_id: 2,
+  };
 
-    try {
-      const res = await api.post(
-        `/submission/run-system`,
-        payload
-      );
+  try {
+    const res = await api.post(`/submission/run`, payload);
 
-      // setActivationId(res.data.submission_id);
+    subscribeToSubmission(res.data.submission_id, (data) => {
+      if (data.user_output) {
+        setOutput(data.user_output);
+      } else {
+        setOutput(`${data.status} : ${data.message}`);
+      }
 
-      const handleResult = (data) => {
-        // console.log(data);
+      setIsRunning(false);
+    }, activeStreamsRef.current);
+  } catch (err) {
+    if (err?.response?.status === 403) {
+      navigate("/results");
+      return;
+    }
+    setOutput("Error: " + (err.response?.data?.message || err.message));
+    setIsRunning(false);
+  }
+};
 
-        setMachineOutput(
-          data.user_output
-            ? data.user_output
-            : `${data.status} : ${data.message}`
-        );
+const submitCode = async () => {
+  setIsSubmitting(true);
+  setOutput(null);
+  setSubmitResult(null);
 
-        setIsMachineRun(false);
+  try {
+    const res = await api.post(
+      `/submission/submit`,
+      {
+        code: encodeBase64(code),
+        language,
+        problem_id: question?.id || 1,
+        event_id: 2,
+      }
+    );
 
-        // Remove listener after handling result
-        socketRef.current.off("result", handleResult);
+    subscribeToSubmission(res.data.submission_id, (data) => {
+      const parsedData = {
+        status: data.status || "unknown",
+        message: data.message || "",
+        failed_test_case: parseInt(data.failed_test_case ?? "0", 10),
+        total_test_case: parseInt(data.total_test_case ?? "0", 10),
+        score: parseInt(data.score ?? "0", 10),
       };
 
-      // Subscribe to this submission
-      socketRef.current.emit("subscribe", res.data.submission_id);
-      socketRef.current.on("result", handleResult);
+      setSubmitResult(parsedData);
 
-    } catch (err) {
-      setOutput("Error: " + (err.response?.data?.message || err.message));
+      if (
+        parsedData.status === "accepted" &&
+        !localStorage.getItem(`solved_${questionIndex}`)
+      ) {
+        localStorage.setItem(`solved_${questionIndex}`, "solved");
+      }
+      setIsSubmitting(false)
+    }, activeStreamsRef.current);
+
+  } catch (err) {
+    if (err?.response?.status === 403) {
+      navigate("/results");
+      return;
     }
+
+    console.error(err);
+
+    toast.error("Something went wrong", {
+      position: "top-center",
+      autoClose: 2000,
+    });
+    setIsSubmitting(false);
+  }
+};
+
+const machineRun = async () => {
+  setMachineOutput(null);
+  setIsMachineRun(true);
+  setLastInput(machineInput);
+
+  const payload = {
+    customTestcase: encodeBase64(machineInput),
+    problem_id: question?.id || 1,
+    event_id: 2,
   };
+
+  try {
+    const res = await api.post(
+      `/submission/run-system`,
+      payload
+    );
+
+    subscribeToSubmission(res.data.submission_id, (data) => {
+      setMachineOutput(
+        data.user_output
+          ? data.user_output
+          : `${data.status} : ${data.message}`
+      );
+
+      setIsMachineRun(false);
+    }, activeStreamsRef.current);
+
+  } catch (err) {
+    if (err?.response?.status === 403) {
+      navigate("/results");
+      return;
+    }
+    setMachineOutput("Error: " + (err.response?.data?.message || err.message));
+    setIsMachineRun(false);
+  }
+};
 
   //fetch submissions
   const fetchSubmissions = async () => {
@@ -378,6 +364,9 @@ public class Main {
             )}
           </div>
 
+          set this false for NCC else true for RC
+          {true && (
+            <>
           {/* Test Case Section */}
           <div className="flex flex-col border-2 border-[#c29673] rounded-lg p-4 bg-[#1a1625]/90 shadow-md text-white gap-3">
             <div className="text-lg font-semibold text-[#FFE7A3] font-play">
@@ -449,6 +438,8 @@ public class Main {
 
 
           </div>
+            </>
+          )}
         </div>
 
         {/* Right Column: Code Editor + Custom Test Case / Submission Results */}

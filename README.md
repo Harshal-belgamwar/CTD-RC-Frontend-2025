@@ -1,15 +1,15 @@
 # ⚡ CTD-RC – Real-Time Online Judge Platform (Frontend)
 
 🧑‍💻 CTD-RC (Code • Test • Debug – Real-time Collaboration)
-A modern desktop-first online judge platform that brings coding, collaboration, and competition together — built with React.js, Tailwind CSS, and Socket.io.
+A modern desktop-first online judge platform that brings coding, collaboration, and competition together — built with React.js and Tailwind CSS.
 
-<p align="center"> <img src="https://img.shields.io/badge/React-18.0-blue?style=for-the-badge&logo=react" /> <img src="https://img.shields.io/badge/TailwindCSS-3.0-38B2AC?style=for-the-badge&logo=tailwindcss" /> <img src="https://img.shields.io/badge/Socket.io-Live%20Sync-000000?style=for-the-badge&logo=socket.io" /> <img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge" /> </p>
+<p align="center"> <img src="https://img.shields.io/badge/React-19.0-blue?style=for-the-badge&logo=react" /> <img src="https://img.shields.io/badge/TailwindCSS-4.0-38B2AC?style=for-the-badge" /> <img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge" /> </p>
 
 ## 🚀 Overview
 
 CTD-RC is a real-time competitive coding frontend built for desktop users, providing:
 
-💬 Live code collaboration with Socket.io
+📡 Server-sent events for live execution results
 
 💻 Optimized editor layout using Tailwind CSS
 
@@ -45,7 +45,7 @@ Styling
 🎨 Tailwind CSS
 
 Real-Time
-🔌 Socket.io
+📡 Server-sent events
 
 Language
 🟨 JavaScript (ES6)
@@ -67,6 +67,12 @@ npm install
 
 ## Start the development server
 npm run dev
+
+## Run with Docker
+docker build -t ctd-rc-frontend .
+docker run --rm -p 8080:80 ctd-rc-frontend
+
+Open http://localhost:8080. The container proxies `/api` and submission SSE requests to the backend at `http://host.docker.internal:3000`.
 
 video: https://youtu.be/CtzCkZDIG1s
 

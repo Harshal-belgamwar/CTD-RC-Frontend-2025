@@ -12,7 +12,7 @@ const Login = () => {
     username: "",
     password: "",
     teamname: "",
-    event_id: 2,
+    event_id: 1,
     isjunior: false,
     isVerified: false,
   });
