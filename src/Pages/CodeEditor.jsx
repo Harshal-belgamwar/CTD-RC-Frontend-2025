@@ -364,7 +364,7 @@ const machineRun = async () => {
             )}
           </div>
 
-          set this false for NCC else true for RC
+          {/* set this false for NCC else true for RC */}
           {true && (
             <>
           {/* Test Case Section */}
