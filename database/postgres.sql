@@ -241,10 +241,10 @@ WITH (oids = false);
 DO $$ BEGIN PERFORM setval('"public"."problemsamples_id_seq"', 8); END $$;
 
 INSERT INTO "problemsamples" ("id", "problem_id", "input", "output", "explanation") VALUES
-(5,	1,	'2',	'4',	NULL),
-(6,	1,	'3',	'9',	NULL),
-(7,	1,	'5',	'25',	NULL),
-(8,	1,	'10',	'100',	NULL);
+(5,	1,	'2',	'4',	'Here we are taking square of the num'),
+(6,	1,	'3',	'9',	'Here we are taking square of the num'),
+(7,	1,	'5',	'25',	'Here we are taking square of the num'),
+(8,	1,	'10',	'100',	'Here we are taking square of the num');
 
 CREATE TABLE "public"."submissions" (
     "id" serial NOT NULL,

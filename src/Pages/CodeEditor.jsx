@@ -365,7 +365,7 @@ const machineRun = async () => {
           </div>
 
           {/* set this false for NCC else true for RC */}
-          {true && (
+          {false && (
             <>
           {/* Test Case Section */}
           <div className="flex flex-col border-2 border-[#c29673] rounded-lg p-4 bg-[#1a1625]/90 shadow-md text-white gap-3">
