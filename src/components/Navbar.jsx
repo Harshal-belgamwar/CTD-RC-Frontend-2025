@@ -13,10 +13,11 @@ const Navbar = () => {
         localStorage.removeItem(key);
       }
     }
-    await api.post(
-      `/user/logout`,
-      {}
-    );
+    // await api.post(
+    //   `/user/logout`,
+    //   {},
+      
+    // );
 
     navigate("/");
   };
